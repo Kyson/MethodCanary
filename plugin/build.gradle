@@ -2,12 +2,35 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 
 dependencies {
-    //gradle sdk
     compile gradleApi()
-    //groovy sdk
     compile localGroovy()
+    compile 'com.android.tools.build:gradle:3.2.1'
 }
 
 repositories {
     mavenCentral()
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.groupId = 'cn.hikyson.methodcanary'
+            pom.artifactId = 'plugin'
+            pom.version = 1.1
+            repository(url: uri('../repos'))
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from project.sourceSets.main.groovy.srcDirs
+    classifier = 'sources'
+}
+task javadocJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'javadoc'
+    from groovydoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
 }
