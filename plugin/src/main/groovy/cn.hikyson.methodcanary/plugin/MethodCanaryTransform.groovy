@@ -43,7 +43,7 @@ public class MethodCanaryTransform extends Transform {
     void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
         mProject.logger.info("MethodCanaryTransform start transform.")
         def startTime = System.currentTimeMillis()
-
+        TransformHandler.handle(mProject, transformInvocation)
         def cost = (System.currentTimeMillis() - startTime) / 1000
         mProject.logger.info("MethodCanaryTransform transform complete, cost " + cost + " s")
     }

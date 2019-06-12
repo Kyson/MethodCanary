@@ -52,7 +52,7 @@ public class TransformHandler {
                     project.logger.info("Dealing with class file [" + file.name + "]")
                     ClassReader classReader = new ClassReader(file.bytes)
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    ClassVisitor cv = new LifecycleClassVisitor(classWriter)
+                    ClassVisitor cv = new MethodCanaryClassVisitor(classWriter)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     byte[] code = classWriter.toByteArray()
                     FileOutputStream fos = new FileOutputStream(
@@ -92,7 +92,7 @@ public class TransformHandler {
                     jarOutputStream.putNextEntry(zipEntry)
                     ClassReader classReader = new ClassReader(IOUtils.toByteArray(inputStream))
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    ClassVisitor cv = new LifecycleClassVisitor(classWriter)
+                    ClassVisitor cv = new MethodCanaryClassVisitor(classWriter)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     byte[] code = classWriter.toByteArray()
                     jarOutputStream.write(code)
