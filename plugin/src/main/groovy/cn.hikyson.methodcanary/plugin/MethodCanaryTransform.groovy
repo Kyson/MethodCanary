@@ -1,13 +1,9 @@
 package cn.hikyson.methodcanary.plugin
 
-import com.android.build.api.transform.DirectoryInput
-import com.android.build.api.transform.JarInput
 import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Transform
 import com.android.build.api.transform.TransformException
-import com.android.build.api.transform.TransformInput
 import com.android.build.api.transform.TransformInvocation
-import com.android.build.api.transform.TransformOutputProvider
 import com.android.build.gradle.internal.pipeline.TransformManager
 import org.gradle.api.Project
 
@@ -41,10 +37,10 @@ public class MethodCanaryTransform extends Transform {
 
     @Override
     void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
-        mProject.logger.info("MethodCanaryTransform start transform.")
+        mProject.logger.quiet("MethodCanaryTransform transform start.")
         def startTime = System.currentTimeMillis()
         TransformHandler.handle(mProject, transformInvocation)
         def cost = (System.currentTimeMillis() - startTime) / 1000
-        mProject.logger.info("MethodCanaryTransform transform complete, cost " + cost + " s")
+        mProject.logger.quiet("MethodCanaryTransform transform end, cost " + cost + " s")
     }
 }
