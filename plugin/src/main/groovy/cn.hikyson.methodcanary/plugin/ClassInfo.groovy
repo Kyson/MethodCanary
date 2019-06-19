@@ -8,5 +8,13 @@ public class ClassInfo {
     String[] interfaces
 
 
-
+    @Override
+    public String toString() {
+        return "ClassInfo{" +
+                "access=" + access +
+                ", name='" + name + '\'' +
+                ", superName='" + superName + '\'' +
+                ", interfaces=" + Arrays.toString(interfaces) +
+                '}';
+    }
 }

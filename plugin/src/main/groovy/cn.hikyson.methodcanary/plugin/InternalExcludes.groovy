@@ -1,5 +1,8 @@
 package cn.hikyson.methodcanary.plugin
 
-public class InternalExcludes {
+class InternalExcludes {
 
+    boolean isMethodExclude(ClassInfo classInfo, MethodInfo methodInfo) {
+        return classInfo.name.startsWith('cn/hikyson/methodcanary/lib/')
+    }
 }

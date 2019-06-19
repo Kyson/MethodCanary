@@ -13,7 +13,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'cn.hikyson.methodcanary:plugin:2.7'
+        classpath 'cn.hikyson.methodcanary:plugin:3.7'
 
     }
 }

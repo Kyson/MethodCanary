@@ -20,7 +20,12 @@ import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 
 public class TransformHandler {
-    public static void handle(Project project, TransformInvocation transformInvocation) {
+    /**
+     * project根目录下创建js文件：MethodCanary.js
+     * @param project
+     * @param transformInvocation
+     */
+    static void handle(Project project, TransformInvocation transformInvocation) {
         Collection<TransformInput> inputs = transformInvocation.inputs
         if (inputs == null) {
             project.logger.quiet("TransformHandler handle: inputs == null")
@@ -31,31 +36,34 @@ public class TransformHandler {
             outputProvider.deleteAll()
             project.logger.quiet("TransformHandler handle: outputProvider.deleteAll")
         }
-        ExcludesEngine excludesEngine = null;
+        InExcludesEngine inExcludesEngine = null;
         File methodCanaryJsFile = new File(project.getRootDir(), "MethodCanary.js")
         if (methodCanaryJsFile.exists() && methodCanaryJsFile.isFile()) {
-            excludesEngine = new ExcludesEngine(FileUtils.readFileToString(methodCanaryJsFile))
+            String inExcludeEngineContent = FileUtils.readFileToString(methodCanaryJsFile)
+            inExcludesEngine = new InExcludesEngine(new InternalExcludes(), inExcludeEngineContent)
+            project.logger.quiet("TransformHandler handle, inExcludeEngineContent:" + inExcludeEngineContent)
         } else {
-            excludesEngine = new ExcludesEngine(null)
+            inExcludesEngine = new InExcludesEngine(new InternalExcludes(), null)
+            project.logger.quiet("TransformHandler handle, No inExcludeEngine found.")
         }
         inputs.each { TransformInput input ->
             input.directoryInputs.each { DirectoryInput directoryInput ->
-                handleDirectoryInput(project, directoryInput, outputProvider)
+                handleDirectoryInput(project, directoryInput, outputProvider, inExcludesEngine)
             }
             input.jarInputs.each { JarInput jarInput ->
-                handleJarInputs(project, jarInput, outputProvider)
+                handleJarInputs(project, jarInput, outputProvider, inExcludesEngine)
             }
         }
     }
 
-    static void handleDirectoryInput(Project project, DirectoryInput directoryInput, TransformOutputProvider outputProvider, ExcludesEngine excludesEngine) {
+    static void handleDirectoryInput(Project project, DirectoryInput directoryInput, TransformOutputProvider outputProvider, InExcludesEngine inExcludesEngine) {
         if (directoryInput.file.isDirectory()) {
             directoryInput.file.eachFileRecurse { File file ->
                 if (file.name.endsWith(".class")) {
-                    project.logger.quiet("Dealing with class file [" + file.name + "]")
+//                    project.logger.quiet("Dealing with class file [" + file.name + "]")
                     ClassReader classReader = new ClassReader(file.bytes)
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, excludesEngine)
+                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, inExcludesEngine)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     byte[] code = classWriter.toByteArray()
                     FileOutputStream fos = new FileOutputStream(
@@ -63,7 +71,7 @@ public class TransformHandler {
                     fos.write(code)
                     fos.close()
                 } else {
-                    project.logger.quiet("Exclude file [" + file.name + "]")
+//                    project.logger.quiet("Exclude file [" + file.name + "]")
                 }
             }
         }
@@ -73,7 +81,7 @@ public class TransformHandler {
         FileUtils.copyDirectory(directoryInput.file, dest)
     }
 
-    static void handleJarInputs(Project project, JarInput jarInput, TransformOutputProvider outputProvider, ExcludesEngine excludesEngine) {
+    static void handleJarInputs(Project project, JarInput jarInput, TransformOutputProvider outputProvider, InExcludesEngine inExcludesEngine) {
         if (jarInput.file.getAbsolutePath().endsWith(".jar")) {
             def jarName = jarInput.name
             def md5Name = DigestUtils.md5Hex(jarInput.file.getAbsolutePath())
@@ -93,16 +101,16 @@ public class TransformHandler {
                 ZipEntry zipEntry = new ZipEntry(entryName)
                 InputStream inputStream = jarFile.getInputStream(jarEntry)
                 if (entryName.endsWith(".class")) {
-                    project.logger.quiet("Dealing with jar [" + jarName + "], class file [" + entryName + "]")
+//                    project.logger.quiet("Dealing with jar [" + jarName + "], class file [" + entryName + "]")
                     jarOutputStream.putNextEntry(zipEntry)
                     ClassReader classReader = new ClassReader(IOUtils.toByteArray(inputStream))
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, excludesEngine)
+                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, inExcludesEngine)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     byte[] code = classWriter.toByteArray()
                     jarOutputStream.write(code)
                 } else {
-                    project.logger.quiet("Exclude jar [" + jarName + "], file [" + entryName + "]")
+//                    project.logger.quiet("Exclude jar [" + jarName + "], file [" + entryName + "]")
                     jarOutputStream.putNextEntry(zipEntry)
                     jarOutputStream.write(IOUtils.toByteArray(inputStream))
                 }
