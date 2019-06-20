@@ -1,6 +1,5 @@
 package cn.hikyson.methodcanary.lib;
 
-import android.content.Context;
 import android.support.annotation.Keep;
 import com.orhanobut.logger.Logger;
 
