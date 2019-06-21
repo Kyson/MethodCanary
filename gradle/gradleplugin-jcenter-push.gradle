@@ -34,7 +34,7 @@ group = GROUP
 apply plugin: 'com.jfrog.bintray'
 
 Properties properties = new Properties()
-if (project.rootProject.file('local.properties') != null) {
+if (project.rootProject.file('local.properties') != null && project.rootProject.file('local.properties').exists()) {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
 }
 
