@@ -63,8 +63,6 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
-
-
 *.iml
 .gradle
 /local.properties
@@ -78,6 +76,7 @@ fastlane/readme.md
 /build
 /captures
 .externalNativeBuild
+.idea/encodings.xml
 .idea/misc.xml
 .idea/runConfigurations.xml
 .idea/codeStyles/codeStyleConfig.xml
