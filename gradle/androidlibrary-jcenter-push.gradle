@@ -1,0 +1,102 @@
+/**
+ * gradle.properties
+ *
+ * VERSION_NAME
+ * GROUP
+ * BINTRAY_NAME         // bintray.com/maven name
+ * DESC
+ * WEBSITE_URL
+ * LICENSE_NAME
+ * LICENSE_URL
+ * DEVELOPER_ID
+ * DEVELOPER_NAME
+ * DEVELOP_EMAIL
+ * VCS_URL
+ * WEBSITE_URL
+ * USER                 // bintray.com
+ * LICENSE_SHORT_NAME   // bintray.com
+ *
+ *
+ * local.properties or env
+ *
+ * BINTRAY_KEY
+ */
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+version = VERSION_NAME
+group = GROUP
+
+apply plugin: 'com.github.dcendents.android-maven'
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            groupId GROUP
+
+            name BINTRAY_NAME
+            description DESC
+            url WEBSITE_URL
+
+            licenses {
+                license {
+                    name LICENSE_NAME
+                    url LICENSE_URL
+                }
+            }
+            developers {
+                developer {
+                    id DEVELOPER_ID
+                    name DEVELOPER_NAME
+                    email DEVELOP_EMAIL
+                }
+            }
+            scm {
+                connection VCS_URL
+                developerConnection VCS_URL
+                url WEBSITE_URL
+            }
+        }
+    }
+}
+
+apply plugin: 'com.jfrog.bintray'
+
+
+Properties properties = new Properties()
+if (project.rootProject.file('local.properties') != null) {
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+}
+String BINTRAY_KEY = (properties.getProperty("BINTRAY_KEY") != null && !"".equals(properties.getProperty("BINTRAY_KEY"))) ? properties.getProperty("BINTRAY_KEY") : System.getenv("BINTRAY_KEY")
+
+bintray {
+    user = USER
+    key = BINTRAY_KEY
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = BINTRAY_NAME
+        websiteUrl = WEBSITE_URL
+        vcsUrl = VCS_URL
+        licenses = [LICENSE_SHORT_NAME]
+        publish = true
+    }
+}

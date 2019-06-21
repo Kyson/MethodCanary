@@ -1,0 +1,16 @@
+script:
+    - ./gradlew clean build && ./gradlew :plugin:clean :plugin:build
+
+notifications:
+    email:
+        - tech@hikyson.cn
+
+deploy:
+    provider: script
+    script: echo deploying to jcenter... && ./gradlew clean build bintrayUpload -PbintrayUser=kyson -PbintrayKey=$BINTRAY_KEY -PdryRun=false && echo deployed to jcenter.
+    on:
+      tags: true
+      branch: master
+
+after_success:
+    - echo I am done.

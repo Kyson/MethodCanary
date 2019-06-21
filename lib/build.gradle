@@ -32,3 +32,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.orhanobut:logger:2.2.0'
 }
+
+apply from: rootProject.file('gradle/androidlibrary-jcenter-push.gradle')

@@ -1,0 +1,55 @@
+/**
+ * gradle.properties
+ *
+ * GROUP
+ * VERSION_NAME
+ * USER //bintray.com
+ * BINTRAY_NAME //bintray.com
+ * WEBSITE_URL
+ * VCS_URL
+ * LICENSE_SHORT_NAME //bintray.com
+ *
+ *
+ * local.properties or env
+ * BINTRAY_KEY
+ */
+task sourcesJar(type: Jar) {
+    from project.sourceSets.main.groovy.srcDirs
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'javadoc'
+    from groovydoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+version = VERSION_NAME
+group = GROUP
+
+apply plugin: 'com.jfrog.bintray'
+
+Properties properties = new Properties()
+if (project.rootProject.file('local.properties') != null) {
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+}
+
+String BINTRAY_KEY = (properties.getProperty("BINTRAY_KEY") != null && !"".equals(properties.getProperty("BINTRAY_KEY"))) ? properties.getProperty("BINTRAY_KEY") : System.getenv("BINTRAY_KEY")
+
+bintray {
+    user = USER
+    key = BINTRAY_KEY
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = BINTRAY_NAME
+        websiteUrl = WEBSITE_URL
+        vcsUrl = VCS_URL
+        licenses = [LICENSE_SHORT_NAME]
+        publish = true
+    }
+}

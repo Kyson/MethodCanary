@@ -25,17 +25,4 @@ uploadArchives {
     }
 }
 
-task sourcesJar(type: Jar) {
-    from project.sourceSets.main.groovy.srcDirs
-    classifier = 'sources'
-}
-
-task javadocJar(type: Jar, dependsOn: groovydoc) {
-    classifier = 'javadoc'
-    from groovydoc.destinationDir
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
+apply from: rootProject.file('gradle/gradleplugin-jcenter-push.gradle')
