@@ -1,14 +1,14 @@
 /**
-classInfo
-    int access
-     String name
-     String superName
-     String[] interfaces
+    classInfo
+        {int access
+         String name
+         String superName
+         String[] interfaces}
 
      methodInfo
-         int access
+         {int access
          String name
-         String desc
+         String desc}
 **/
 function isExclude(classInfo,methodInfo){
     if(classInfo.name.startsWith('android/support/')

@@ -3,7 +3,7 @@ package cn.hikyson.methodcanary.sample;
 import android.util.Log;
 import cn.hikyson.methodcanary.lib.MethodCanaryInject;
 
-public class TestClass {
+public class SampleAppClassA {
     public static void testMethod1() {
         try {
             Thread.sleep(3000);

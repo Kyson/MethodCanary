@@ -28,42 +28,51 @@ public class TransformHandler {
     static void handle(Project project, TransformInvocation transformInvocation) {
         Collection<TransformInput> inputs = transformInvocation.inputs
         if (inputs == null) {
-            project.logger.quiet("TransformHandler handle: inputs == null")
+            project.logger.quiet("[MethodCanary] TransformHandler handle: inputs == null")
             return
         }
         TransformOutputProvider outputProvider = transformInvocation.outputProvider
         if (outputProvider != null) {
             outputProvider.deleteAll()
-            project.logger.quiet("TransformHandler handle: outputProvider.deleteAll")
+//            project.logger.quiet("[MethodCanary] TransformHandler handle: outputProvider.deleteAll")
         }
+        File intermediatesDir = new File(project.buildDir, "intermediates")
+        File methodCanaryDir = new File(intermediatesDir, "method_canary")
+        FileUtils.forceDeleteOnExit(new File(methodCanaryDir, "inject_result.txt"))
+        StringBuilder result = new StringBuilder()
         InExcludesEngine inExcludesEngine = null;
         File methodCanaryJsFile = new File(project.getRootDir(), "MethodCanary.js")
         if (methodCanaryJsFile.exists() && methodCanaryJsFile.isFile()) {
             String inExcludeEngineContent = FileUtils.readFileToString(methodCanaryJsFile)
             inExcludesEngine = new InExcludesEngine(new InternalExcludes(), inExcludeEngineContent)
-            project.logger.quiet("TransformHandler handle, inExcludeEngineContent:" + inExcludeEngineContent)
+            project.logger.quiet("[MethodCanary] TransformHandler handle, inExcludeEngineContent:" + inExcludeEngineContent)
         } else {
             inExcludesEngine = new InExcludesEngine(new InternalExcludes(), null)
-            project.logger.quiet("TransformHandler handle, No inExcludeEngine found.")
+            project.logger.quiet("[MethodCanary] TransformHandler handle, No inExcludeEngine found.")
         }
+        project.logger.quiet("[MethodCanary] Inject start.")
         inputs.each { TransformInput input ->
             input.directoryInputs.each { DirectoryInput directoryInput ->
-                handleDirectoryInput(project, directoryInput, outputProvider, inExcludesEngine)
+                handleDirectoryInput(project, directoryInput, outputProvider, inExcludesEngine, result)
             }
             input.jarInputs.each { JarInput jarInput ->
-                handleJarInputs(project, jarInput, outputProvider, inExcludesEngine)
+                handleJarInputs(project, jarInput, outputProvider, inExcludesEngine, result)
             }
         }
+        project.logger.quiet("[MethodCanary] Inject end.")
+        project.logger.quiet("[MethodCanary] Generate result start.")
+        FileUtils.writeStringToFile(new File(methodCanaryDir, "inject_result.txt"), result.toString(), "utf-8", false)
+        project.logger.quiet("[MethodCanary] Generate result end.")
     }
 
-    static void handleDirectoryInput(Project project, DirectoryInput directoryInput, TransformOutputProvider outputProvider, InExcludesEngine inExcludesEngine) {
+    static void handleDirectoryInput(Project project, DirectoryInput directoryInput, TransformOutputProvider outputProvider, InExcludesEngine inExcludesEngine, StringBuilder result) {
         if (directoryInput.file.isDirectory()) {
             directoryInput.file.eachFileRecurse { File file ->
                 if (file.name.endsWith(".class")) {
-//                    project.logger.quiet("Dealing with class file [" + file.name + "]")
+//                    project.logger.quiet("[MethodCanary] Dealing with class file [" + file.name + "]")
                     ClassReader classReader = new ClassReader(file.bytes)
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, inExcludesEngine)
+                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, inExcludesEngine, result)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     byte[] code = classWriter.toByteArray()
                     FileOutputStream fos = new FileOutputStream(
@@ -71,7 +80,7 @@ public class TransformHandler {
                     fos.write(code)
                     fos.close()
                 } else {
-//                    project.logger.quiet("Exclude file [" + file.name + "]")
+//                    project.logger.quiet("[MethodCanary] Exclude file [" + file.name + "]")
                 }
             }
         }
@@ -81,7 +90,7 @@ public class TransformHandler {
         FileUtils.copyDirectory(directoryInput.file, dest)
     }
 
-    static void handleJarInputs(Project project, JarInput jarInput, TransformOutputProvider outputProvider, InExcludesEngine inExcludesEngine) {
+    static void handleJarInputs(Project project, JarInput jarInput, TransformOutputProvider outputProvider, InExcludesEngine inExcludesEngine, StringBuilder result) {
         if (jarInput.file.getAbsolutePath().endsWith(".jar")) {
             def jarName = jarInput.name
             def md5Name = DigestUtils.md5Hex(jarInput.file.getAbsolutePath())
@@ -101,16 +110,16 @@ public class TransformHandler {
                 ZipEntry zipEntry = new ZipEntry(entryName)
                 InputStream inputStream = jarFile.getInputStream(jarEntry)
                 if (entryName.endsWith(".class")) {
-//                    project.logger.quiet("Dealing with jar [" + jarName + "], class file [" + entryName + "]")
+//                    project.logger.quiet("[MethodCanary] Dealing with jar [" + jarName + "], class file [" + entryName + "]")
                     jarOutputStream.putNextEntry(zipEntry)
                     ClassReader classReader = new ClassReader(IOUtils.toByteArray(inputStream))
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, inExcludesEngine)
+                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, inExcludesEngine, result)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     byte[] code = classWriter.toByteArray()
                     jarOutputStream.write(code)
                 } else {
-//                    project.logger.quiet("Exclude jar [" + jarName + "], file [" + entryName + "]")
+//                    project.logger.quiet("[MethodCanary] Exclude jar [" + jarName + "], file [" + entryName + "]")
                     jarOutputStream.putNextEntry(zipEntry)
                     jarOutputStream.write(IOUtils.toByteArray(inputStream))
                 }

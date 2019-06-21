@@ -2,16 +2,12 @@ package cn.hikyson.methodcanary.sample
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
-import cn.hikyson.methodcanary.lib.FileUtil
 import cn.hikyson.methodcanary.lib.MethodCanaryInject
+import cn.hikyson.methodcanary.samplelib.SampleLibClassA
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
-import java.io.File
-import java.nio.charset.Charset
 import com.orhanobut.logger.PrettyFormatStrategy
-import com.orhanobut.logger.FormatStrategy
 
 
 class MainActivity : AppCompatActivity() {
@@ -30,11 +26,18 @@ class MainActivity : AppCompatActivity() {
         this.findViewById<Button>(R.id.activity_main_test).setOnClickListener {
             Thread(Runnable {
                 for (i in 0..1000) {
-                    TestClass.testMethod1()
-                    TestClass.testMethod2()
-                    TestClass.testMethod3()
+                    SampleAppClassA.testMethod1()
+                    SampleAppClassA.testMethod2()
+                    SampleAppClassA.testMethod3()
                 }
             }).start()
+            Thread(Runnable {
+                for (i in 0..5000) {
+                    val a = SampleLibClassA("name" + i, i, i % 2 == 0);
+                    a.callMe()
+                    a.growup()
+                }
+            })
         }
         this.findViewById<Button>(R.id.activity_main_monitor).setOnClickListener {
             if (this.isStarted) {

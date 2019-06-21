@@ -37,10 +37,10 @@ public class MethodCanaryTransform extends Transform {
 
     @Override
     void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
-        mProject.logger.quiet("MethodCanaryTransform transform start.")
+        mProject.logger.quiet("[MethodCanary] ======================== transform start ========================")
         def startTime = System.currentTimeMillis()
         TransformHandler.handle(mProject, transformInvocation)
         def cost = (System.currentTimeMillis() - startTime) / 1000
-        mProject.logger.quiet("MethodCanaryTransform transform end, cost " + cost + " s")
+        mProject.logger.quiet("[MethodCanary] ======================== transform end, cost " + cost + " s ========================")
     }
 }
