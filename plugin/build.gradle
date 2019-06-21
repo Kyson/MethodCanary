@@ -19,7 +19,7 @@ uploadArchives {
         mavenDeployer {
             pom.groupId = 'cn.hikyson.methodcanary'
             pom.artifactId = 'plugin'
-            pom.version = 0.3
+            pom.version = 0.4
             repository(url: uri('../repos'))
         }
     }

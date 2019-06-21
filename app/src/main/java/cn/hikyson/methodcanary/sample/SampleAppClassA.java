@@ -1,7 +1,5 @@
 package cn.hikyson.methodcanary.sample;
 
-import android.util.Log;
-import cn.hikyson.methodcanary.lib.MethodCanaryInject;
 
 public class SampleAppClassA {
     public static void testMethod1() {

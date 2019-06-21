@@ -25,9 +25,4 @@ public class ThreadInfo {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "[THREAD]" + "id=" + id + ";name=" + name + ";priority=" + priority;
-    }
 }
