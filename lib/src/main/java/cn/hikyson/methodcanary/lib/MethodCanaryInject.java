@@ -120,7 +120,7 @@ public class MethodCanaryInject {
     /**
      * record during last start monitor success
      */
-    public static synchronized void stopMonitorAndOutput() {
+    public static synchronized void stopMonitor() {
         sStopped = true;
         MethodCanaryLogger.log("结束监控中...");
         if (sWorkHandler != null) {
