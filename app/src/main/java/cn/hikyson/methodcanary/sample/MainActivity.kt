@@ -13,6 +13,7 @@ import java.io.IOException
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
+import java.nio.charset.Charset
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,11 +32,16 @@ class MainActivity : AppCompatActivity() {
 
         MethodCanaryInject.init(
             MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(application).methodEventThreshold(
-                100
+                28
             ).methodCanaryOutputCallback(
                 { methodEventMap, record ->
                     Logger.d("methodEventMap:\n" + serializeMethodEvent(methodEventMap))
-                    Logger.d("record:\n" + readFile2BytesByChannel(record))
+                    Logger.d("record:\n" + readFile2BytesByChannel(record)?.let {
+                        String(
+                            it,
+                            Charset.forName("utf-8")
+                        )
+                    })
                 }).build()
         )
         this.findViewById<Button>(R.id.activity_main_test).setOnClickListener {
@@ -64,7 +70,6 @@ class MainActivity : AppCompatActivity() {
             this.findViewById<Button>(R.id.activity_main_monitor).setText(if (this.isStarted) "stop" else "start")
         }
     }
-
 
     internal fun serializeMethodEvent(methodEventMap: Map<ThreadInfo, List<MethodEvent>>): String {
         val sb = StringBuilder()
@@ -109,7 +114,6 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
 
     private fun isFileExists(file: File?): Boolean {
         return file != null && file.exists()

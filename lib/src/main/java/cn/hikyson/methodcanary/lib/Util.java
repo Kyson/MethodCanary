@@ -14,7 +14,7 @@ public class Util {
 
     static File ensureRecordFile(Context context) throws FileNotFoundException {
         File dir = new File(context.getCacheDir(), RECORD_DIR_NAME);
-        if (!dir.isDirectory()) {
+        if (dir.exists() && !dir.isDirectory()) {
             if (!dir.delete()) {
                 throw new FileNotFoundException("method_canary file is not dir and can not be deleted.");
             }
@@ -37,16 +37,6 @@ public class Util {
         boolean result = f.delete();
     }
 
-    // TODO KYSON DEL 使用计数器替代，影响性能
-    static int computeMethodEventCount(Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
-        int count = 0;
-        for (Map.Entry<ThreadInfo, List<MethodEvent>> entry : methodEventMap.entrySet()) {
-            List<MethodEvent> mes = entry.getValue();
-            count = count + (mes == null ? 0 : mes.size());
-        }
-        return count;
-    }
-
     static String serializeMethodEvent(Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<ThreadInfo, List<MethodEvent>> entry : methodEventMap.entrySet()) {
@@ -67,9 +57,9 @@ public class Util {
     }
 
     static boolean writeFileFromBytesByChannel(final File file,
-                                                      final byte[] bytes,
-                                                      final boolean append,
-                                                      final boolean isForce) {
+                                               final byte[] bytes,
+                                               final boolean append,
+                                               final boolean isForce) {
         if (bytes == null) {
             return false;
         }

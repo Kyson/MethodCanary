@@ -3,27 +3,14 @@ package cn.hikyson.methodcanary.lib;
 import android.app.Application;
 
 public class MethodCanaryConfig {
-    // TODO KYSON IMPL 提高性能，开放访问
-    private Application mApp;
-    private int mMethodEventThreshold;
-    private MethodCanaryOutputCallback mMethodCanaryOutputCallback;
-
-    public Application getApp() {
-        return mApp;
-    }
-
-    public int getMethodEventThreshold() {
-        return mMethodEventThreshold;
-    }
-
-    public MethodCanaryOutputCallback getMethodCanaryOutputCallback() {
-        return mMethodCanaryOutputCallback;
-    }
+    public Application app;
+    public int methodEventThreshold;
+    public MethodCanaryOutputCallback methodCanaryOutputCallback;
 
     public static final class MethodCanaryConfigBuilder {
-        private Application mApp;
-        private int mMethodEventThreshold;
-        private MethodCanaryOutputCallback mMethodCanaryOutputCallback;
+        public Application app;
+        public int methodEventThreshold;
+        public MethodCanaryOutputCallback methodCanaryOutputCallback;
 
         private MethodCanaryConfigBuilder() {
         }
@@ -32,26 +19,26 @@ public class MethodCanaryConfig {
             return new MethodCanaryConfigBuilder();
         }
 
-        public MethodCanaryConfigBuilder app(Application App) {
-            this.mApp = App;
+        public MethodCanaryConfigBuilder app(Application app) {
+            this.app = app;
             return this;
         }
 
-        public MethodCanaryConfigBuilder methodEventThreshold(int MethodEventThreshold) {
-            this.mMethodEventThreshold = MethodEventThreshold;
+        public MethodCanaryConfigBuilder methodEventThreshold(int ethodEventThreshold) {
+            this.methodEventThreshold = ethodEventThreshold;
             return this;
         }
 
-        public MethodCanaryConfigBuilder methodCanaryOutputCallback(MethodCanaryOutputCallback MethodCanaryOutputCallback) {
-            this.mMethodCanaryOutputCallback = MethodCanaryOutputCallback;
+        public MethodCanaryConfigBuilder methodCanaryOutputCallback(MethodCanaryOutputCallback ethodCanaryOutputCallback) {
+            this.methodCanaryOutputCallback = ethodCanaryOutputCallback;
             return this;
         }
 
         public MethodCanaryConfig build() {
             MethodCanaryConfig methodCanaryConfig = new MethodCanaryConfig();
-            methodCanaryConfig.mMethodCanaryOutputCallback = this.mMethodCanaryOutputCallback;
-            methodCanaryConfig.mApp = this.mApp;
-            methodCanaryConfig.mMethodEventThreshold = this.mMethodEventThreshold;
+            methodCanaryConfig.methodEventThreshold = this.methodEventThreshold;
+            methodCanaryConfig.methodCanaryOutputCallback = this.methodCanaryOutputCallback;
+            methodCanaryConfig.app = this.app;
             return methodCanaryConfig;
         }
     }
