@@ -17,12 +17,19 @@ public class ThreadInfo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         ThreadInfo that = (ThreadInfo) o;
-        return id == that.id;
+
+        if (id != that.id) return false;
+        if (priority != that.priority) return false;
+        return name != null ? name.equals(that.name) : that.name == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + priority;
+        return result;
     }
 }
