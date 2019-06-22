@@ -1,7 +1,5 @@
 package cn.hikyson.methodcanary.plugin
 
-import org.apache.http.util.TextUtils
-
 import javax.script.Invocable
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
@@ -11,7 +9,7 @@ class InExcludesEngine implements IInExcludes {
     private InternalExcludes mInternalExcludes
 
     InExcludesEngine(InternalExcludes internalExcludes, String eval) {
-        if (!TextUtils.isEmpty(eval)) {
+        if (eval != null && eval.length() > 0) {
             this.mJsEngine = new ScriptEngineManager().getEngineByName("javascript");
             this.mJsEngine.eval(eval)
         }
