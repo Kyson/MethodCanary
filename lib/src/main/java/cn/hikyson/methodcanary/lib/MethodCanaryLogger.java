@@ -1,6 +1,6 @@
 package cn.hikyson.methodcanary.lib;
 
-public class MethodCanaryLogger {
+class MethodCanaryLogger {
     private static final String TAG = "MethodCanary";
 
     static void log(String msg) {

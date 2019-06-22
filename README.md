@@ -1,5 +1,7 @@
 # MethodCanary
 
+[中文](https://github.com/Kyson/MethodCanary/blob/master/README_zh.md)
+
 MethodCanary is tool to record method invocations
 
 ## Quick Start

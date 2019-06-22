@@ -1,5 +1,7 @@
 # MethodCanary
 
+[English](https://github.com/Kyson/MethodCanary/blob/master/README.md)
+
 MethodCanary是记录Android应用代码执行的工具
 
 ## Quick Start

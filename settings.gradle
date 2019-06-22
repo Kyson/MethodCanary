@@ -1,1 +1,1 @@
-include ':app', ':samplelib', ':plugin', ':lib'
+include ':app', ':samplelib', ':plugin', ':lib', ':libnoop'
