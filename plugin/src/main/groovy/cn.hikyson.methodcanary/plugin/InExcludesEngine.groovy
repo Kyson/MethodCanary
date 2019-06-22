@@ -19,7 +19,7 @@ class InExcludesEngine implements IInExcludes {
     @Override
     boolean isMethodInclude(ClassInfo classInfo, MethodInfo methodInfo) {
         if (mJsEngine == null) {
-            return false
+            return true
         }
         boolean isInclude = ((Invocable) mJsEngine).invokeFunction("isInclude", classInfo, methodInfo)
         return isInclude
