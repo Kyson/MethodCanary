@@ -10,7 +10,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "cn.hikyson.methodcanary.sample"
-        minSdkVersion 19
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -36,5 +36,6 @@ dependencies {
     implementation 'com.orhanobut:logger:2.2.0'
     releaseImplementation project(path: ':libnoop')
     debugImplementation project(path: ':lib')
-//    implementation 'cn.hikyson.methodcanary:lib:0.0.9'
+//    debugImplementation 'cn.hikyson.methodcanary:lib:0.10.0'
+//    releaseImplementation 'cn.hikyson.methodcanary:libnoop:0.10.0'
 }
