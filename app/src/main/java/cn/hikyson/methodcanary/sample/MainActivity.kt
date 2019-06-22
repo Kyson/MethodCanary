@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
         this.findViewById<Button>(R.id.activity_main_monitor).setOnClickListener {
             if (this.isStarted) {
-                MethodCanaryInject.stopMonitorAndOutput()
+                MethodCanaryInject.stopMonitor()
             } else {
                 MethodCanaryInject.startMonitor()
             }

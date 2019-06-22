@@ -35,5 +35,5 @@ dependencies {
     implementation project(path: ':samplelib')
 //    implementation project(path: ':lib')
     implementation 'com.orhanobut:logger:2.2.0'
-    implementation 'cn.hikyson.methodcanary:lib:0.0.8'
+    implementation 'cn.hikyson.methodcanary:lib:0.0.9'
 }
