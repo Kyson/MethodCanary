@@ -1,6 +1,6 @@
 # MethodCanary
 
-MethodCanary is tool to record method invocations
+MethodCanary是记录Android应用代码执行的工具
 
 ## Quick Start
 
@@ -29,9 +29,9 @@ implementation 'cn.hikyson.methodcanary:lib:VERSION'
 
 ### Step1 Custom plugin
 
-By default, `cn.hikyson.methodcanary.plugin` will inject code to all methods, include a lot of unnecessary
+`cn.hikyson.methodcanary.plugin` 默认会给所有方法都注入记录的代码，其中很多其实都是没必要的
 
-you can change this behavior by put js file `MethodCanary.js` in project root, content sample:
+你可以把很多不需要插桩的方法排除掉：在项目根目录下创建文件`MethodCanary.js`，文件内容的样例如下:
 
 ```
 function isExclude(classInfo,methodInfo){
@@ -52,41 +52,44 @@ function isInclude(classInfo,methodInfo){
 }
 ```
 
-#### Note
+#### 注意
 
-1. can not change function name and desc:`function isExclude(classInfo,methodInfo)` and `function isInclude(classInfo,methodInfo)`
-2. these two functions must return boolean, default false for `isExclude`, true for `isInclude`
-3. param `classInfo` has fields: `int access`,`String name`,`String superName`,`String[] interfaces`
-4. param `methodInfo` has fields: `int access`,`String name`,`String desc`
-5. write `MethodCanary.js` by javascript language
+1. 不能修改文件中这两个方法的名称和参数:`function isExclude(classInfo,methodInfo)` and `function isInclude(classInfo,methodInfo)`
+2. 这两个方法的返回值必须是bool类型，`isExclude`方法默认返回false，`isInclude`默认返回true
+3. 参数`classInfo`有如下字段: `int access`,`String name`,`String superName`,`String[] interfaces`
+4. 参数`methodInfo`有如下字段: `int access`,`String name`,`String desc`
+5. 使用javascript语言写`MethodCanary.js`文件
 
 ### Step2
 
-Init MethodCanaryInject in application
+在Application中初始化MethodCanaryInject
 
 `MethodCanaryInject.init(MethodCanaryConfig methodCanaryConfig)`
 
-Build methodCanaryConfig:
+构建methodCanaryConfig:
 
 ```java
 MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(application).methodEventThreshold(
                 1000
             ).methodCanaryOutputCallback(
                 { methodEventMap, record ->
-                    // methodEventMap:store method event in memory
-                    // record:store method event in file
-                    // if method event over methodEventThreshold(1000),then methodEventMap->record
-                    // if you want to get all method events，you should merge methodEventMap and record
-                    // record file's contract：
+                    // methodEventMap:记录方法调用在内存中
+                    // record:记录方法调用在文件中
+                    // 方法调用一开始记录在内存中，如果记录超过了methodEventThreshold(1000)条，就会写入record文件中
+                    // 所以回调之后获取所有的方法调用记录，需要合并methodEventMap和record文件中的内容
+                    // 文件中的方法调用的契约：
                     // [THREAD]id=1;name=main;priority=5
                     // PUSH:et=155079652962024;cn=cn/hikyson/methodcanary/sample/MainActivity;ma=25;mn=access$isStarted$p;md=(Lcn/hikyson/methodcanary/sample/MainActivity;)Z
-                    // POP:et=155079653206024;cn=cn/hikyson/methodcanary/sample/MainActivity;ma=25;mn=access$isStarted$p;md=(Lcn/hikyson/methodcanary/sample/MainActivity;)Z                
+                    // POP:et=155079653206024;cn=cn/hikyson/methodcanary/sample/MainActivity;ma=25;mn=access$isStarted$p;md=(Lcn/hikyson/methodcanary/sample/MainActivity;)Z
+                    
                 }).build()
 ```
 
 ### Step3
 
 ```java
+// 开始记录方法调用
 MethodCanaryInject.startMonitor()
+// 结束方法调用，之后会回调methodCanaryOutputCallback
 MethodCanaryInject.stopMonitor()
 ```
