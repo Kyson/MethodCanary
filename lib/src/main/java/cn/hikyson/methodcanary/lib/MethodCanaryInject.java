@@ -19,15 +19,27 @@ public class MethodCanaryInject {
     private static MethodCanaryConfig sMethodCanaryConfig;
 
     /**
-     * init sdk
+     * install sdk
      *
      * @param methodCanaryConfig
      */
-    public static synchronized void init(MethodCanaryConfig methodCanaryConfig) {
+    public static synchronized void install(MethodCanaryConfig methodCanaryConfig) {
         sMethodCanaryConfig = methodCanaryConfig;
+        clearRuntime();
         HandlerThread worker = new HandlerThread("method-canary-record");
         worker.start();
         sWorkHandler = new Handler(worker.getLooper());
+    }
+
+    /**
+     * uninstall
+     */
+    public static synchronized void uninstall() {
+        clearRuntime();
+        if (sWorkHandler != null) {
+            sWorkHandler.getLooper().quit();
+            sWorkHandler = null;
+        }
     }
 
     @Keep
@@ -52,8 +64,8 @@ public class MethodCanaryInject {
                 }
                 MethodCanaryLogger.log("方法进入:" + methodEnterEvent.methodName);
                 methodEvents.add(methodEnterEvent);
-                checkShouldWriteMethodEventsToFile(false);
                 sMethodEventOfMapCount = sMethodEventOfMapCount + 1;
+                checkShouldWriteMethodEventsToFile(false);
                 sTaskRunningCount.decrementAndGet();
             }
         });
@@ -81,15 +93,15 @@ public class MethodCanaryInject {
                 }
                 MethodCanaryLogger.log("方法退出:" + methodExitEvent.methodName);
                 methodEvents.add(methodExitEvent);
-                checkShouldWriteMethodEventsToFile(false);
                 sMethodEventOfMapCount = sMethodEventOfMapCount + 1;
+                checkShouldWriteMethodEventsToFile(false);
                 sTaskRunningCount.decrementAndGet();
             }
         });
     }
 
     private static void checkShouldWriteMethodEventsToFile(boolean isForce) {
-        if (isForce || sMethodEventOfMapCount > sMethodCanaryConfig.methodEventThreshold) {
+        if (isForce || sMethodEventOfMapCount >= sMethodCanaryConfig.methodEventThreshold) {
             try {
                 File record = Util.ensureRecordFile(sMethodCanaryConfig.app);
                 byte[] content = Util.serializeMethodEvent(sMethodEventMap).getBytes(Charset.forName("utf-8"));
@@ -124,17 +136,28 @@ public class MethodCanaryInject {
         sStopped = true;
         MethodCanaryLogger.log("结束监控中...");
         if (sWorkHandler != null) {
+            sTaskRunningCount.incrementAndGet();
             sWorkHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    sMethodCanaryConfig.methodCanaryOutputCallback.output(new HashMap<>(sMethodEventMap), Util.getRecordFile(sMethodCanaryConfig.app));
-                    sMethodEventMap.clear();
-                    sMethodEventOfMapCount = 0;
-                    Util.deleteRecordFile(sMethodCanaryConfig.app);
-                    sTaskRunningCount.set(0);
+                    if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryOutputCallback != null && sMethodCanaryConfig.app != null) {
+                        sMethodCanaryConfig.methodCanaryOutputCallback.output(new HashMap<>(sMethodEventMap), Util.getRecordFile(sMethodCanaryConfig.app));
+                    }
+                    clearRuntime();
+                    sTaskRunningCount.decrementAndGet();
                     MethodCanaryLogger.log("监控结束.");
                 }
             });
         }
+    }
+
+    private static void clearRuntime() {
+        sStopped = true;
+        sMethodEventMap.clear();
+        sMethodEventOfMapCount = 0;
+        if (sMethodCanaryConfig != null && sMethodCanaryConfig.app != null) {
+            Util.deleteRecordFile(sMethodCanaryConfig.app);
+        }
+        sTaskRunningCount.set(0);
     }
 }

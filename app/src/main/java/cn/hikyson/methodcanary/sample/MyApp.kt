@@ -26,20 +26,51 @@ class MyApp : Application() {
             .tag("MethodCanary")
             .build()
         Logger.addLogAdapter(AndroidLogAdapter(formatStrategy));
-        MethodCanaryInject.init(
-            MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
-                30
-            ).methodCanaryOutputCallback(
-                { methodEventMap, record ->
-                    Logger.d("methodEventMap:\n" + serializeMethodEvent(methodEventMap))
-                    Logger.d("record:\n" + readFile2BytesByChannel(record)?.let {
-                        String(
-                            it,
-                            Charset.forName("utf-8")
-                        )
-                    })
-                }).build()
-        )
+
+
+        Thread(Runnable {
+            for (i in 0..1000) {
+                Thread.sleep(293)
+                MethodCanaryInject.install(
+                    MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
+                        5
+                    ).methodCanaryOutputCallback(
+                        { methodEventMap, record ->
+                            Logger.d("methodEventMap:\n" + serializeMethodEvent(methodEventMap))
+                            Logger.d("record:\n" + readFile2BytesByChannel(record)?.let {
+                                String(
+                                    it,
+                                    Charset.forName("utf-8")
+                                )
+                            })
+                        }).build()
+                )
+            }
+        }).start()
+
+        Thread(Runnable {
+            for (i in 0..1000) {
+                Thread.sleep(189)
+                MethodCanaryInject.uninstall()
+            }
+        }).start()
+
+        Thread(Runnable {
+            for (i in 0..10000) {
+                Thread.sleep(42)
+                try {
+                    MethodCanaryInject.startMonitor()
+                } catch (e: Throwable) {
+                }
+            }
+        }).start()
+        Thread(Runnable {
+            for (i in 0..10000) {
+                Thread.sleep(23)
+                MethodCanaryInject.stopMonitor()
+            }
+        }).start()
+
     }
 
     internal fun serializeMethodEvent(methodEventMap: Map<ThreadInfo, List<MethodEvent>>): String {

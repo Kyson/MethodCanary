@@ -5,7 +5,10 @@ import android.support.annotation.Keep;
 @Keep
 public class MethodCanaryInject {
 
-    public static synchronized void init(MethodCanaryConfig methodCanaryConfig) {
+    public static synchronized void install(MethodCanaryConfig methodCanaryConfig) {
+    }
+
+    public static synchronized void uninstall() {
     }
 
     @Keep
