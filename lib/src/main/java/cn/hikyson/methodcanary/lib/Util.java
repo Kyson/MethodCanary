@@ -40,20 +40,13 @@ public class Util {
     static String serializeMethodEvent(Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<ThreadInfo, List<MethodEvent>> entry : methodEventMap.entrySet()) {
-            sb.append(threadInfo2String(entry.getKey())).append("\n");
+            sb.append(entry.getKey()).append("\n");
             List<MethodEvent> mes = entry.getValue();
             for (MethodEvent methodEvent : mes) {
                 sb.append(methodEvent).append("\n");
             }
         }
         return String.valueOf(sb);
-    }
-
-    private static String threadInfo2String(ThreadInfo threadInfo) {
-        if (threadInfo == null) {
-            return "[THREAD] NULL";
-        }
-        return "[THREAD]" + "id=" + threadInfo.id + ";name=" + threadInfo.name + ";priority=" + threadInfo.priority;
     }
 
     static boolean writeFileFromBytesByChannel(final File file,
@@ -79,6 +72,45 @@ public class Util {
             try {
                 if (fc != null) {
                     fc.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static boolean createOrExistsFile(final File file) {
+        if (file == null) return false;
+        if (file.exists()) return file.isFile();
+        if (!createOrExistsDir(file.getParentFile())) return false;
+        try {
+            return file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static boolean createOrExistsDir(final File file) {
+        return file != null && (file.exists() ? file.isDirectory() : file.mkdirs());
+    }
+
+    static boolean writeFileFromBytesByStream(final File file,
+                                                     final byte[] bytes,
+                                                     final boolean append) {
+        if (bytes == null || !createOrExistsFile(file)) return false;
+        BufferedOutputStream bos = null;
+        try {
+            bos = new BufferedOutputStream(new FileOutputStream(file, append));
+            bos.write(bytes);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (bos != null) {
+                    bos.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

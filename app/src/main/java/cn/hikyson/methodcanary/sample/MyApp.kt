@@ -1,10 +1,7 @@
 package cn.hikyson.methodcanary.sample
 
 import android.app.Application
-import cn.hikyson.methodcanary.lib.MethodCanaryConfig
-import cn.hikyson.methodcanary.lib.MethodCanaryInject
-import cn.hikyson.methodcanary.lib.MethodEvent
-import cn.hikyson.methodcanary.lib.ThreadInfo
+import cn.hikyson.methodcanary.lib.*
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -27,7 +24,6 @@ class MyApp : Application() {
             .build()
         Logger.addLogAdapter(AndroidLogAdapter(formatStrategy));
 
-
         Thread(Runnable {
             for (i in 0..1000) {
                 Thread.sleep(293)
@@ -35,8 +31,7 @@ class MyApp : Application() {
                     MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
                         5
                     ).methodCanaryOutputCallback(
-                        { methodEventMap, record ->
-                            Logger.d("methodEventMap:\n" + serializeMethodEvent(methodEventMap))
+                        { record ->
                             Logger.d("record:\n" + readFile2BytesByChannel(record)?.let {
                                 String(
                                     it,
@@ -70,24 +65,6 @@ class MyApp : Application() {
                 MethodCanaryInject.stopMonitor()
             }
         }).start()
-
-    }
-
-    internal fun serializeMethodEvent(methodEventMap: Map<ThreadInfo, List<MethodEvent>>): String {
-        val sb = StringBuilder()
-        for ((key, mes) in methodEventMap) {
-            sb.append(threadInfo2String(key)).append("\n")
-            for (methodEvent in mes) {
-                sb.append(methodEvent).append("\n")
-            }
-        }
-        return sb.toString()
-    }
-
-    private fun threadInfo2String(threadInfo: ThreadInfo?): String {
-        return if (threadInfo == null) {
-            "[THREAD] NULL"
-        } else "[THREAD]" + "id=" + threadInfo.id + ";name=" + threadInfo.name + ";priority=" + threadInfo.priority
     }
 
     internal fun readFile2BytesByChannel(file: File): ByteArray? {

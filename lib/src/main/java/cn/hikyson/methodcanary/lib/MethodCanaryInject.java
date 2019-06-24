@@ -105,7 +105,7 @@ public class MethodCanaryInject {
             try {
                 File record = Util.ensureRecordFile(sMethodCanaryConfig.app);
                 byte[] content = Util.serializeMethodEvent(sMethodEventMap).getBytes(Charset.forName("utf-8"));
-                boolean result = Util.writeFileFromBytesByChannel(record, content, true, true);
+                boolean result = Util.writeFileFromBytesByChannel(record, content, true, false);
                 if (!result) {
                     throw new Exception("write method event to file fail.");
                 }
@@ -141,7 +141,8 @@ public class MethodCanaryInject {
                 @Override
                 public void run() {
                     if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryOutputCallback != null && sMethodCanaryConfig.app != null) {
-                        sMethodCanaryConfig.methodCanaryOutputCallback.output(new HashMap<>(sMethodEventMap), Util.getRecordFile(sMethodCanaryConfig.app));
+                        checkShouldWriteMethodEventsToFile(true);
+                        sMethodCanaryConfig.methodCanaryOutputCallback.output(Util.getRecordFile(sMethodCanaryConfig.app));
                     }
                     clearRuntime();
                     sTaskRunningCount.decrementAndGet();

@@ -1,6 +1,5 @@
 package cn.hikyson.methodcanary.lib;
 
-import java.util.Objects;
 
 public class ThreadInfo {
     public long id;
@@ -31,5 +30,10 @@ public class ThreadInfo {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + priority;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "[THREAD]" + "id=" + this.id + ";name=" + this.name + ";priority=" + this.priority;
     }
 }
