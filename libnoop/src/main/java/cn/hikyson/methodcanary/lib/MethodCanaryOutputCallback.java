@@ -5,5 +5,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface MethodCanaryOutputCallback {
-    void output(File methodEventsFile);
+    void output(long startTimeNanos, long stopTimeNanos, File methodEventsFile);
 }
