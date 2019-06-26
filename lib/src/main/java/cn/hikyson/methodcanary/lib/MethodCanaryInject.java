@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Keep
 public class MethodCanaryInject {
     private static volatile boolean sStopped = true;
+    private static long sStartTimeNanos;
+    private static long sStopTimeNanos;
     private static AtomicInteger sTaskRunningCount = new AtomicInteger(0);
     private static int sMethodEventOfMapCount = 0;
     private static Map<ThreadInfo, List<MethodEvent>> sMethodEventMap = new HashMap<>();
@@ -126,6 +128,7 @@ public class MethodCanaryInject {
             throw new Exception("please init method canary first.");
         }
         sStopped = false;
+        sStartTimeNanos = System.nanoTime();
         MethodCanaryLogger.log("开启监控成功");
     }
 
@@ -134,6 +137,7 @@ public class MethodCanaryInject {
      */
     public static synchronized void stopMonitor() {
         sStopped = true;
+        sStopTimeNanos = System.nanoTime();
         MethodCanaryLogger.log("结束监控中...");
         if (sWorkHandler != null) {
             sTaskRunningCount.incrementAndGet();
@@ -142,7 +146,7 @@ public class MethodCanaryInject {
                 public void run() {
                     if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryOutputCallback != null && sMethodCanaryConfig.app != null) {
                         checkShouldWriteMethodEventsToFile(true);
-                        sMethodCanaryConfig.methodCanaryOutputCallback.output(Util.getRecordFile(sMethodCanaryConfig.app));
+                        sMethodCanaryConfig.methodCanaryOutputCallback.output(sStartTimeNanos, sStopTimeNanos, Util.getRecordFile(sMethodCanaryConfig.app));
                     }
                     clearRuntime();
                     sTaskRunningCount.decrementAndGet();
@@ -154,6 +158,8 @@ public class MethodCanaryInject {
 
     private static void clearRuntime() {
         sStopped = true;
+        sStartTimeNanos = 0;
+        sStopTimeNanos = 0;
         sMethodEventMap.clear();
         sMethodEventOfMapCount = 0;
         if (sMethodCanaryConfig != null && sMethodCanaryConfig.app != null) {
