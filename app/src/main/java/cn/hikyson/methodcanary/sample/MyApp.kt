@@ -30,15 +30,18 @@ class MyApp : Application() {
                 MethodCanaryInject.install(
                     MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
                         5
-                    ).methodCanaryOutputCallback(
-                        { record ->
-                            Logger.d("record:\n" + readFile2BytesByChannel(record)?.let {
+                    ).methodCanaryOutputCallback { startTimeNanos, stopTimeNanos, methodEventsFile ->
+                        Logger.d(
+                            "startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
+                            startTimeNanos,
+                            stopTimeNanos,
+                            readFile2BytesByChannel(methodEventsFile)?.let {
                                 String(
                                     it,
                                     Charset.forName("utf-8")
                                 )
                             })
-                        }).build()
+                    }.build()
                 )
             }
         }).start()
