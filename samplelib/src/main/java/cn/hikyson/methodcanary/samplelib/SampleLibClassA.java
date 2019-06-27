@@ -20,7 +20,7 @@ public class SampleLibClassA {
     }
 
     public void callMe() {
-        Log.d("sample", this.name);
+        String name2 = name;
     }
 
 }

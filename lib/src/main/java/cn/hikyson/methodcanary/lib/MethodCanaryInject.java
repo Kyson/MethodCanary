@@ -5,7 +5,6 @@ import android.os.HandlerThread;
 import android.support.annotation.Keep;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -106,8 +105,9 @@ public class MethodCanaryInject {
         if (isForce || sMethodEventOfMapCount >= sMethodCanaryConfig.methodEventThreshold) {
             try {
                 File record = Util.ensureRecordFile(sMethodCanaryConfig.app);
-                byte[] content = Util.serializeMethodEvent(sMethodEventMap).getBytes(Charset.forName("utf-8"));
-                boolean result = Util.writeFileFromBytesByChannel(record, content, true, false);
+                long start = System.currentTimeMillis();
+                boolean result = Util.mergeInToFile(record, sMethodEventMap);
+                MethodCanaryLogger.log("mergeInToFile cost:" + (System.currentTimeMillis() - start) + "ms");
                 if (!result) {
                     throw new Exception("write method event to file fail.");
                 }
@@ -149,7 +149,6 @@ public class MethodCanaryInject {
                         sMethodCanaryConfig.methodCanaryOutputCallback.output(sStartTimeNanos, sStopTimeNanos, Util.getRecordFile(sMethodCanaryConfig.app));
                     }
                     clearRuntime();
-                    sTaskRunningCount.decrementAndGet();
                     MethodCanaryLogger.log("监控结束.");
                 }
             });

@@ -24,49 +24,67 @@ class MyApp : Application() {
             .build()
         Logger.addLogAdapter(AndroidLogAdapter(formatStrategy));
 
+//        Thread(Runnable {
+//            for (i in 0..100) {
+//                Thread.sleep(502)
+//                MethodCanaryInject.install(
+//                    MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
+//                        5
+//                    ).methodCanaryOutputCallback { startTimeNanos, stopTimeNanos, methodEventsFile ->
+//                        Logger.d(
+//                            "startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
+//                            startTimeNanos,
+//                            stopTimeNanos,
+//                            readFile2BytesByChannel(methodEventsFile)?.let { String(it, Charset.forName("utf-8")) }
+//                        )
+//                    }.build()
+//                )
+//            }
+//        }).start()
+//
+//        Thread(Runnable {
+//            for (i in 0..100) {
+//                Thread.sleep(401)
+//                MethodCanaryInject.uninstall()
+//            }
+//        }).start()
+//
+//        Thread(Runnable {
+//            for (i in 0..200) {
+//                Thread.sleep(231)
+//                try {
+//                    MethodCanaryInject.startMonitor()
+//                } catch (e: Throwable) {
+//                }
+//            }
+//        }).start()
+//        Thread(Runnable {
+//            for (i in 0..200) {
+//                Thread.sleep(171)
+//                MethodCanaryInject.stopMonitor()
+//            }
+//        }).start()
+
         Thread(Runnable {
-            for (i in 0..1000) {
-                Thread.sleep(293)
-                MethodCanaryInject.install(
-                    MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
-                        5
-                    ).methodCanaryOutputCallback { startTimeNanos, stopTimeNanos, methodEventsFile ->
-                        Logger.d(
-                            "startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
-                            startTimeNanos,
-                            stopTimeNanos,
-                            readFile2BytesByChannel(methodEventsFile)?.let {
-                                String(
-                                    it,
-                                    Charset.forName("utf-8")
-                                )
-                            })
-                    }.build()
-                )
-            }
+            MethodCanaryInject.install(
+                MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
+                    1000
+                ).methodCanaryOutputCallback { startTimeNanos, stopTimeNanos, methodEventsFile ->
+                    Logger.d(
+                        "startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
+                        startTimeNanos,
+                        stopTimeNanos,
+                        readFile2BytesByChannel(methodEventsFile)?.let { String(it, Charset.forName("utf-8")) }
+                    )
+                    MethodCanaryInject.uninstall()
+                }.build()
+            );
+            MethodCanaryInject.startMonitor()
         }).start()
 
         Thread(Runnable {
-            for (i in 0..1000) {
-                Thread.sleep(189)
-                MethodCanaryInject.uninstall()
-            }
-        }).start()
-
-        Thread(Runnable {
-            for (i in 0..10000) {
-                Thread.sleep(42)
-                try {
-                    MethodCanaryInject.startMonitor()
-                } catch (e: Throwable) {
-                }
-            }
-        }).start()
-        Thread(Runnable {
-            for (i in 0..10000) {
-                Thread.sleep(23)
-                MethodCanaryInject.stopMonitor()
-            }
+            Thread.sleep(15000)
+            MethodCanaryInject.stopMonitor()
         }).start()
     }
 

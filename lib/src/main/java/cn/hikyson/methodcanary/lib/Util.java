@@ -1,16 +1,27 @@
 package cn.hikyson.methodcanary.lib;
 
 import android.content.Context;
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Util {
-    private static final String RECORD_DIR_NAME = "method_canary";
-    private static final String RECORD_FILE_NAME = "method_events.tmp";
+    public static final Pattern PATTERN_THREAD = Pattern.compile("^\\[THREAD]id=(\\d*);name=(.*);priority=(\\d*)$");
+    public static final Pattern PATTERN_METHOD_ENTER = Pattern.compile("^PUSH:et=(\\d*);cn=(.*);ma=(-?\\d*);mn=(.*);md=(.*)$");
+    public static final Pattern PATTERN_METHOD_EXIT = Pattern.compile("^POP:et=(\\d*);cn=(.*);ma=(-?\\d*);mn=(.*);md=(.*)$");
+    public static final String START_THREAD = "[THREAD]";
+    public static final String START_METHOD_ENTER = "PUSH:";
+    public static final String START_METHOD_EXIT = "POP:";
+
+    static final String RECORD_DIR_NAME = "method_canary";
+    static final String RECORD_FILE_NAME = "method_events.tmp";
 
     static File ensureRecordFile(Context context) throws FileNotFoundException {
         File dir = new File(context.getCacheDir(), RECORD_DIR_NAME);
@@ -37,7 +48,66 @@ public class Util {
         boolean result = f.delete();
     }
 
-    static String serializeMethodEvent(Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
+    static boolean mergeInToFile(File sourceFile, Map<ThreadInfo, List<MethodEvent>> old) {
+        Map<ThreadInfo, List<MethodEvent>> methodEventMap = new HashMap<>(old);
+        if (!createOrExistsFile(sourceFile)) {
+            return false;
+        }
+        File tmp = new File(sourceFile.getParentFile(), sourceFile.getName() + "~");
+        if (tmp.exists() && !tmp.delete()) {
+            return false;
+        }
+        BufferedSource bufferedSource;
+        BufferedSink bufferedSink;
+        try {
+            bufferedSource = Okio.buffer(Okio.source(sourceFile));
+            bufferedSink = Okio.buffer(Okio.sink(tmp));
+            ThreadInfo currentThreadInfo = null;
+            boolean shouldInsertToCurrentThread = false;
+            while (true) {
+                String line = bufferedSource.readUtf8Line();
+                if (line == null || line.startsWith(START_THREAD)) {
+                    if (shouldInsertToCurrentThread) {
+                        List<MethodEvent> currentMethodEvents = methodEventMap.remove(currentThreadInfo);
+                        if (currentMethodEvents != null && !currentMethodEvents.isEmpty()) {
+                            for (MethodEvent methodEvent : currentMethodEvents) {
+                                bufferedSink.writeUtf8(methodEvent + "\n");
+                            }
+                        }
+                    }
+                    if (line == null) {
+                        break;
+                    }
+                    bufferedSink.writeUtf8(line + "\n");
+                    Matcher m = PATTERN_THREAD.matcher(line);
+                    if (m.find()) {
+                        long id = Long.parseLong(m.group(1));
+                        String name = m.group(2);
+                        int priority = Integer.parseInt(m.group(3));
+                        currentThreadInfo = new ThreadInfo(id, name, priority);
+                        //如果当前线程信息和需要插入的方法线程一致的话，说明合并的方法都需要插入到该线程信息下
+                        shouldInsertToCurrentThread = methodEventMap.containsKey(currentThreadInfo);
+                    } else {
+                        throw new IllegalStateException("illegal format for [THREAD] line:" + line);
+                    }
+                } else {
+                    bufferedSink.writeUtf8(line + "\n");
+                }
+            }
+            bufferedSink.writeUtf8(serializeMethodEvent(methodEventMap));
+            bufferedSink.flush();
+        } catch (Throwable e) {
+            return false;
+        }
+        closeSilently(bufferedSource);
+        closeSilently(bufferedSink);
+        if (!sourceFile.delete()) {
+            return false;
+        }
+        return tmp.renameTo(sourceFile);
+    }
+
+    private static String serializeMethodEvent(Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<ThreadInfo, List<MethodEvent>> entry : methodEventMap.entrySet()) {
             sb.append(entry.getKey()).append("\n");
@@ -96,8 +166,8 @@ public class Util {
     }
 
     static boolean writeFileFromBytesByStream(final File file,
-                                                     final byte[] bytes,
-                                                     final boolean append) {
+                                              final byte[] bytes,
+                                              final boolean append) {
         if (bytes == null || !createOrExistsFile(file)) return false;
         BufferedOutputStream bos = null;
         try {
@@ -114,6 +184,15 @@ public class Util {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private static void closeSilently(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException var2) {
             }
         }
     }
