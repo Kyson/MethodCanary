@@ -4,6 +4,8 @@
 
 MethodCanary is tool to record method invocations
 
+[![Build Status](https://travis-ci.org/Kyson/MethodCanary.svg?branch=master)](https://travis-ci.org/Kyson/MethodCanary)
+
 ## Quick Start
 
 ### Step0 Download
@@ -26,7 +28,8 @@ Module com.android.application
 ```groovy
 apply plugin: 'cn.hikyson.methodcanary.plugin'
 
-implementation 'cn.hikyson.methodcanary:lib:VERSION'
+releaseImplementation 'cn.hikyson.methodcanary:lib:VERSION'
+debugImplementation 'cn.hikyson.methodcanary:libnoop:VERSION'
 ```
 
 ### Step1 Custom plugin
