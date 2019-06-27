@@ -83,7 +83,7 @@ class MyApp : Application() {
         }).start()
 
         Thread(Runnable {
-            Thread.sleep(15000)
+            Thread.sleep(5000)
             MethodCanaryInject.stopMonitor()
         }).start()
     }

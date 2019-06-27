@@ -107,7 +107,7 @@ public class MethodCanaryInject {
                 File record = Util.ensureRecordFile(sMethodCanaryConfig.app);
                 long start = System.currentTimeMillis();
                 boolean result = Util.mergeInToFile(record, sMethodEventMap);
-                MethodCanaryLogger.log(String.format("超出方法数限制[%s],合并到文件结果[%s],消耗[%s]ms", sMethodCanaryConfig.methodEventThreshold, result, (System.currentTimeMillis() - start)));
+                MethodCanaryLogger.log(String.format("超出方法数限制[%s]或强制合并进文件,结果[%s],消耗[%s]ms", sMethodCanaryConfig.methodEventThreshold, result, (System.currentTimeMillis() - start)));
                 if (!result) {
                     throw new Exception("write method event to file fail.");
                 }
