@@ -68,7 +68,7 @@ class MyApp : Application() {
         Thread(Runnable {
             MethodCanaryInject.install(
                 MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
-                    1000
+                    100
                 ).methodCanaryOutputCallback { startTimeNanos, stopTimeNanos, methodEventsFile ->
                     Logger.d(
                         "startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
