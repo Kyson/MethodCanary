@@ -4,13 +4,16 @@ import android.app.Application;
 
 public class MethodCanaryConfig {
     public Application app;
+    /**
+     * <=0 说明不需要写文件，直接使用内存
+     */
     public int methodEventThreshold;
-    public MethodCanaryOutputCallback methodCanaryOutputCallback;
+    public MethodCanaryCallback methodCanaryOutputCallback;
 
     public static final class MethodCanaryConfigBuilder {
         public Application app;
         public int methodEventThreshold;
-        public MethodCanaryOutputCallback methodCanaryOutputCallback;
+        public MethodCanaryCallback methodCanaryOutputCallback;
 
         private MethodCanaryConfigBuilder() {
         }
@@ -29,7 +32,7 @@ public class MethodCanaryConfig {
             return this;
         }
 
-        public MethodCanaryConfigBuilder methodCanaryOutputCallback(MethodCanaryOutputCallback ethodCanaryOutputCallback) {
+        public MethodCanaryConfigBuilder methodCanaryOutputCallback(MethodCanaryCallback ethodCanaryOutputCallback) {
             this.methodCanaryOutputCallback = ethodCanaryOutputCallback;
             return this;
         }

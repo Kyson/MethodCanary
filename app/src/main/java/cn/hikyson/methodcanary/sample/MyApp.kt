@@ -28,16 +28,49 @@ class MyApp : Application() {
 //            for (i in 0..100) {
 //                Thread.sleep(502)
 //                MethodCanaryInject.install(
-//                    MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
-//                        5
-//                    ).methodCanaryOutputCallback { startTimeNanos, stopTimeNanos, methodEventsFile ->
-//                        Logger.d(
-//                            "startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
-//                            startTimeNanos,
-//                            stopTimeNanos,
-//                            readFile2BytesByChannel(methodEventsFile)?.let { String(it, Charset.forName("utf-8")) }
-//                        )
-//                    }.build()
+//                    MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig()
+//                        .app(this)
+//                        .methodEventThreshold(0)
+//                        .methodCanaryOutputCallback(object : MethodCanaryCallback {
+//
+//                            override fun onStopped() {
+//
+//                            }
+//
+//                            override fun outputToMemory(
+//                                startTimeNanos: Long,
+//                                stopTimeNanos: Long,
+//                                methodEventMap: Map<ThreadInfo, List<MethodEvent>>
+//                            ) {
+//                                Logger.d(
+//                                    "startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
+//                                    startTimeNanos,
+//                                    stopTimeNanos,
+//                                    methodEventMap
+//                                )
+//                                MethodCanaryInject.uninstall()
+//                            }
+//
+//                            override fun outputToFile(
+//                                startTimeNanos: Long,
+//                                stopTimeNanos: Long,
+//                                methodEventsFile: File
+//                            ) {
+//                                Logger.d(
+//                                    "startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
+//                                    startTimeNanos,
+//                                    stopTimeNanos,
+//                                    readFile2BytesByChannel(methodEventsFile)?.let {
+//                                        String(
+//                                            it,
+//                                            Charset.forName("utf-8")
+//                                        )
+//                                    }
+//                                )
+//                                MethodCanaryInject.uninstall()
+//                            }
+//                        })
+//                        .build()
 //                )
 //            }
 //        }).start()
@@ -67,23 +100,50 @@ class MyApp : Application() {
 
         Thread(Runnable {
             MethodCanaryInject.install(
-                MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(this).methodEventThreshold(
-                    100
-                ).methodCanaryOutputCallback { startTimeNanos, stopTimeNanos, methodEventsFile ->
-                    Logger.d(
-                        "startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
-                        startTimeNanos,
-                        stopTimeNanos,
-                        readFile2BytesByChannel(methodEventsFile)?.let { String(it, Charset.forName("utf-8")) }
-                    )
-                    MethodCanaryInject.uninstall()
-                }.build()
-            );
+                MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig()
+                    .app(this)
+                    .methodEventThreshold(0)
+                    .methodCanaryOutputCallback(object : MethodCanaryCallback {
+
+                        override fun onStopped() {
+                            Logger.d("正在停止...")
+                        }
+
+                        override fun outputToMemory(
+                            startTimeNanos: Long,
+                            stopTimeNanos: Long,
+                            methodEventMap: Map<ThreadInfo, List<MethodEvent>>
+                        ) {
+                            Logger.d(
+                                "收到内存中的消息%s：startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
+                                methodEventMap.size,
+                                startTimeNanos,
+                                stopTimeNanos,
+                                methodEventMap
+                            )
+                            MethodCanaryInject.uninstall()
+                        }
+
+                        override fun outputToFile(startTimeNanos: Long, stopTimeNanos: Long, methodEventsFile: File) {
+                            Logger.d(
+                                "收到文件中的消息：startTimeNanos:%s, stopTimeNanos:%s, methodEventsFile:\n%s",
+                                startTimeNanos,
+                                stopTimeNanos,
+                                readFile2BytesByChannel(methodEventsFile)?.let { String(it, Charset.forName("utf-8")) }
+                            )
+                            MethodCanaryInject.uninstall()
+                        }
+                    })
+                    .build()
+            )
+            Logger.d("已经安装")
             MethodCanaryInject.startMonitor()
+            Logger.d("开始监控")
         }).start()
 
         Thread(Runnable {
             Thread.sleep(5000)
+            Logger.d("等待了50s，已停止")
             MethodCanaryInject.stopMonitor()
         }).start()
     }

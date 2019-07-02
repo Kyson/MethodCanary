@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import cn.hikyson.methodcanary.lib.*
 import cn.hikyson.methodcanary.samplelib.SampleLibClassA
+import com.orhanobut.logger.Logger
 
 
 class MainActivity : AppCompatActivity() {
@@ -15,18 +16,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         this.findViewById<Button>(R.id.activity_main_test).setOnClickListener {
             Thread(Runnable {
+                Logger.d("开始执行SampleAppClassA中的方法")
                 for (i in 0..1000) {
                     SampleAppClassA.testMethod1()
                     SampleAppClassA.testMethod2()
                     SampleAppClassA.testMethod3()
                 }
+                Logger.d("结束执行SampleAppClassA中的方法")
             }).start()
             Thread(Runnable {
+                Logger.d("开始执行SampleLibClassA中的方法")
                 for (i in 0..5000) {
                     val a = SampleLibClassA("name" + i, i, i % 2 == 0);
                     a.callMe()
                     a.growup()
                 }
+                Logger.d("结束执行SampleLibClassA中的方法")
             }).start()
         }
         this.findViewById<Button>(R.id.activity_main_monitor).setOnClickListener {

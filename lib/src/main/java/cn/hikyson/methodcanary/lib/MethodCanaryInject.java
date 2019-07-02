@@ -102,7 +102,7 @@ public class MethodCanaryInject {
     }
 
     private static void checkShouldWriteMethodEventsToFile(boolean isForce) {
-        if (isForce || sMethodEventOfMapCount >= sMethodCanaryConfig.methodEventThreshold) {
+        if (sMethodCanaryConfig.methodEventThreshold > 0 && (isForce || sMethodEventOfMapCount >= sMethodCanaryConfig.methodEventThreshold)) {
             try {
                 File record = Util.ensureRecordFile(sMethodCanaryConfig.app);
                 long start = System.currentTimeMillis();
@@ -145,8 +145,13 @@ public class MethodCanaryInject {
                 @Override
                 public void run() {
                     if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryOutputCallback != null && sMethodCanaryConfig.app != null) {
-                        checkShouldWriteMethodEventsToFile(true);
-                        sMethodCanaryConfig.methodCanaryOutputCallback.output(sStartTimeNanos, sStopTimeNanos, Util.getRecordFile(sMethodCanaryConfig.app));
+                        sMethodCanaryConfig.methodCanaryOutputCallback.onStopped();
+                        if (sMethodCanaryConfig.methodEventThreshold > 0) {//需要写文件
+                            checkShouldWriteMethodEventsToFile(true);
+                            sMethodCanaryConfig.methodCanaryOutputCallback.outputToFile(sStartTimeNanos, sStopTimeNanos, Util.getRecordFile(sMethodCanaryConfig.app));
+                        } else {
+                            sMethodCanaryConfig.methodCanaryOutputCallback.outputToMemory(sStartTimeNanos, sStopTimeNanos, sMethodEventMap);
+                        }
                     }
                     clearRuntime();
                     MethodCanaryLogger.log("监控结束.");
