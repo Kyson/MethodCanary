@@ -5,7 +5,7 @@ import android.app.Application;
 public class MethodCanaryConfig {
     public Application app;
     /**
-     * <=0 说明不需要写文件，直接使用内存
+     * negative means will not write to file
      */
     public int methodEventThreshold;
     public MethodCanaryCallback methodCanaryCallback;
