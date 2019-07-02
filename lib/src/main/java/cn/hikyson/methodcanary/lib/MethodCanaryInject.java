@@ -144,13 +144,13 @@ public class MethodCanaryInject {
             sWorkHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryOutputCallback != null && sMethodCanaryConfig.app != null) {
-                        sMethodCanaryConfig.methodCanaryOutputCallback.onStopped();
+                    if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryCallback != null && sMethodCanaryConfig.app != null) {
+                        sMethodCanaryConfig.methodCanaryCallback.onStopped();
                         if (sMethodCanaryConfig.methodEventThreshold > 0) {//需要写文件
                             checkShouldWriteMethodEventsToFile(true);
-                            sMethodCanaryConfig.methodCanaryOutputCallback.outputToFile(sStartTimeNanos, sStopTimeNanos, Util.getRecordFile(sMethodCanaryConfig.app));
+                            sMethodCanaryConfig.methodCanaryCallback.outputToFile(sStartTimeNanos, sStopTimeNanos, Util.getRecordFile(sMethodCanaryConfig.app));
                         } else {
-                            sMethodCanaryConfig.methodCanaryOutputCallback.outputToMemory(sStartTimeNanos, sStopTimeNanos, sMethodEventMap);
+                            sMethodCanaryConfig.methodCanaryCallback.outputToMemory(sStartTimeNanos, sStopTimeNanos, sMethodEventMap);
                         }
                     }
                     clearRuntime();

@@ -8,12 +8,13 @@ public class MethodCanaryConfig {
      * <=0 说明不需要写文件，直接使用内存
      */
     public int methodEventThreshold;
-    public MethodCanaryCallback methodCanaryOutputCallback;
+    public MethodCanaryCallback methodCanaryCallback;
+
 
     public static final class MethodCanaryConfigBuilder {
         public Application app;
         public int methodEventThreshold;
-        public MethodCanaryCallback methodCanaryOutputCallback;
+        public MethodCanaryCallback methodCanaryCallback;
 
         private MethodCanaryConfigBuilder() {
         }
@@ -27,21 +28,21 @@ public class MethodCanaryConfig {
             return this;
         }
 
-        public MethodCanaryConfigBuilder methodEventThreshold(int ethodEventThreshold) {
-            this.methodEventThreshold = ethodEventThreshold;
+        public MethodCanaryConfigBuilder methodEventThreshold(int methodEventThreshold) {
+            this.methodEventThreshold = methodEventThreshold;
             return this;
         }
 
-        public MethodCanaryConfigBuilder methodCanaryOutputCallback(MethodCanaryCallback ethodCanaryOutputCallback) {
-            this.methodCanaryOutputCallback = ethodCanaryOutputCallback;
+        public MethodCanaryConfigBuilder methodCanaryCallback(MethodCanaryCallback methodCanaryCallback) {
+            this.methodCanaryCallback = methodCanaryCallback;
             return this;
         }
 
         public MethodCanaryConfig build() {
             MethodCanaryConfig methodCanaryConfig = new MethodCanaryConfig();
-            methodCanaryConfig.methodEventThreshold = this.methodEventThreshold;
-            methodCanaryConfig.methodCanaryOutputCallback = this.methodCanaryOutputCallback;
             methodCanaryConfig.app = this.app;
+            methodCanaryConfig.methodCanaryCallback = this.methodCanaryCallback;
+            methodCanaryConfig.methodEventThreshold = this.methodEventThreshold;
             return methodCanaryConfig;
         }
     }

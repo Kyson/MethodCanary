@@ -103,7 +103,7 @@ class MyApp : Application() {
                 MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig()
                     .app(this)
                     .methodEventThreshold(0)
-                    .methodCanaryOutputCallback(object : MethodCanaryCallback {
+                    .methodCanaryCallback(object : MethodCanaryCallback {
 
                         override fun onStopped() {
                             Logger.d("正在停止...")

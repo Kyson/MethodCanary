@@ -1,7 +1,5 @@
 package cn.hikyson.methodcanary.lib;
 
-import java.util.Objects;
-
 public class ThreadInfo {
     public long id;
     public String name;
