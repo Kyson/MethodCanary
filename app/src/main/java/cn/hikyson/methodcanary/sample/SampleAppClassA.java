@@ -4,7 +4,7 @@ package cn.hikyson.methodcanary.sample;
 public class SampleAppClassA {
     public static void testMethod1() {
         try {
-            Thread.sleep(1);
+            Thread.sleep(50);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -25,7 +25,7 @@ public class SampleAppClassA {
                 while (true) {
                     j++;
                     try {
-                        Thread.sleep(2);
+                        Thread.sleep(50);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

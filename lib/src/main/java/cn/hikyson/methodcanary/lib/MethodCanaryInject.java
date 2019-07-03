@@ -78,22 +78,24 @@ public class MethodCanaryInject {
     }
 
     private static void onMethodEventPostProcess(final long id, final String name, final int priority, final MethodEvent methodEvent) {
-        sWorkHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                final ThreadInfo threadInfo = obtainThreadInfo(id, name, priority);
-                List<MethodEvent> methodEvents = sMethodEventMap.get(threadInfo);
-                if (methodEvents == null) {
-                    methodEvents = new ArrayList<>(METHOD_COUNT_INIT_SIZE);
-                    sMethodEventMap.put(threadInfo.copy(), methodEvents);
+        if (sWorkHandler != null) {
+            sWorkHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    final ThreadInfo threadInfo = obtainThreadInfo(id, name, priority);
+                    List<MethodEvent> methodEvents = sMethodEventMap.get(threadInfo);
+                    if (methodEvents == null) {
+                        methodEvents = new ArrayList<>(METHOD_COUNT_INIT_SIZE);
+                        sMethodEventMap.put(threadInfo.copy(), methodEvents);
+                    }
+                    releaseThreadInfo(threadInfo);
+                    methodEvents.add(methodEvent);
+                    sMethodEventOfMapCount = sMethodEventOfMapCount + 1;
+                    checkShouldWriteMethodEventsToFile(false);
+                    sTaskRunningCount.decrementAndGet();
                 }
-                releaseThreadInfo(threadInfo);
-                methodEvents.add(methodEvent);
-                sMethodEventOfMapCount = sMethodEventOfMapCount + 1;
-                checkShouldWriteMethodEventsToFile(false);
-                sTaskRunningCount.decrementAndGet();
-            }
-        });
+            });
+        }
     }
 
     private static void checkShouldWriteMethodEventsToFile(boolean isForce) {
