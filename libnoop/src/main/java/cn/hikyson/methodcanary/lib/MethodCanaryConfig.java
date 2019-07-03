@@ -1,19 +1,14 @@
 package cn.hikyson.methodcanary.lib;
 
-import android.app.Application;
-
 public class MethodCanaryConfig {
-    public Application app;
     /**
-     * negative means will not write to file
+     * nano time
      */
-    public int methodEventThreshold;
+    public long lowCostThreshold;
     public MethodCanaryCallback methodCanaryCallback;
 
-
     public static final class MethodCanaryConfigBuilder {
-        public Application app;
-        public int methodEventThreshold;
+        public long lowCostThreshold;
         public MethodCanaryCallback methodCanaryCallback;
 
         private MethodCanaryConfigBuilder() {
@@ -23,13 +18,8 @@ public class MethodCanaryConfig {
             return new MethodCanaryConfigBuilder();
         }
 
-        public MethodCanaryConfigBuilder app(Application app) {
-            this.app = app;
-            return this;
-        }
-
-        public MethodCanaryConfigBuilder methodEventThreshold(int methodEventThreshold) {
-            this.methodEventThreshold = methodEventThreshold;
+        public MethodCanaryConfigBuilder lowCostThreshold(long lowCostThreshold) {
+            this.lowCostThreshold = lowCostThreshold;
             return this;
         }
 
@@ -40,9 +30,8 @@ public class MethodCanaryConfig {
 
         public MethodCanaryConfig build() {
             MethodCanaryConfig methodCanaryConfig = new MethodCanaryConfig();
-            methodCanaryConfig.app = this.app;
+            methodCanaryConfig.lowCostThreshold = this.lowCostThreshold;
             methodCanaryConfig.methodCanaryCallback = this.methodCanaryCallback;
-            methodCanaryConfig.methodEventThreshold = this.methodEventThreshold;
             return methodCanaryConfig;
         }
     }

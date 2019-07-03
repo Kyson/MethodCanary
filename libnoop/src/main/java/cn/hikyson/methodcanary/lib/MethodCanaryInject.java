@@ -4,24 +4,34 @@ import android.support.annotation.Keep;
 
 @Keep
 public class MethodCanaryInject {
-
+    /**
+     * install sdk
+     *
+     * @param methodCanaryConfig
+     */
     public static synchronized void install(MethodCanaryConfig methodCanaryConfig) {
     }
 
+    /**
+     * uninstall
+     */
     public static synchronized void uninstall() {
-    }
-
-    @Keep
-    public static void onMethodEnter(int accessFlag, String className, String methodName, String desc) {
-    }
-
-    @Keep
-    public static void onMethodExit(int accessFlag, String className, final String methodName, String desc) {
     }
 
     public static synchronized void startMonitor() throws Exception {
     }
 
+    /**
+     * record during last start monitor success
+     */
     public static synchronized void stopMonitor() {
+    }
+
+    @Keep
+    public static void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc) {
+    }
+
+    @Keep
+    public static void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc) {
     }
 }
