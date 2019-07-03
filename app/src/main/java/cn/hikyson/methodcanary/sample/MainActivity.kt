@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         this.findViewById<Button>(R.id.activity_main_test).setOnClickListener {
             Thread(Runnable {
                 Logger.d("开始执行SampleAppClassA中的方法")
-                for (i in 0..1000) {
+                for (i in 0..10000) {
                     SampleAppClassA.testMethod1()
                     SampleAppClassA.testMethod2()
                     SampleAppClassA.testMethod3()
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
             }).start()
             Thread(Runnable {
                 Logger.d("开始执行SampleLibClassA中的方法")
-                for (i in 0..5000) {
+                for (i in 0..10000) {
                     val a = SampleLibClassA("name" + i, i, i % 2 == 0);
                     a.callMe()
                     a.growup()

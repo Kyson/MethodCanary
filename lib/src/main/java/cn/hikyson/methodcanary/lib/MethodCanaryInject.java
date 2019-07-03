@@ -20,7 +20,7 @@ public class MethodCanaryInject {
     private static Handler sWorkHandler;
     private static MethodCanaryConfig sMethodCanaryConfig;
     private static final int METHOD_COUNT_INIT_SIZE = 32;
-    private static Pools.SimplePool<ThreadInfo> sThreadInfoSimplePool;
+    private static Pools.SimplePool<ThreadInfo> sThreadInfoSimplePool = new Pools.SimplePool<>(20);
 
     /**
      * install sdk
@@ -30,7 +30,6 @@ public class MethodCanaryInject {
     public static synchronized void install(MethodCanaryConfig methodCanaryConfig) {
         sMethodCanaryConfig = methodCanaryConfig;
         clearRuntime();
-        sThreadInfoSimplePool = new Pools.SimplePool<>(20);
         HandlerThread worker = new HandlerThread("method-canary-record");
         worker.start();
         sWorkHandler = new Handler(worker.getLooper());
@@ -41,7 +40,6 @@ public class MethodCanaryInject {
      */
     public static synchronized void uninstall() {
         clearRuntime();
-        sThreadInfoSimplePool = null;
         if (sWorkHandler != null) {
             sWorkHandler.getLooper().quit();
             sWorkHandler = null;
@@ -170,10 +168,7 @@ public class MethodCanaryInject {
     }
 
     private static ThreadInfo obtainThreadInfo(long id, String name, int priority) {
-        ThreadInfo threadInfo = null;
-        if (sThreadInfoSimplePool != null) {
-            threadInfo = sThreadInfoSimplePool.acquire();
-        }
+        ThreadInfo threadInfo = sThreadInfoSimplePool.acquire();
         if (threadInfo == null) {
             threadInfo = new ThreadInfo();
 //            MethodCanaryLogger.log("创建ThreadInfo对象");

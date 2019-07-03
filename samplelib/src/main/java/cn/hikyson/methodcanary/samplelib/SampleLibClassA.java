@@ -15,7 +15,7 @@ public class SampleLibClassA {
     }
 
     public void growup() throws InterruptedException {
-        Thread.sleep(1000);
+        Thread.sleep(5);
         this.age = this.age + 1;
     }
 
