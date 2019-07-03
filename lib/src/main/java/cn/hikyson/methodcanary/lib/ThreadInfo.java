@@ -6,10 +6,17 @@ public class ThreadInfo {
     public String name;
     public int priority;
 
+    public ThreadInfo() {
+    }
+
     public ThreadInfo(long id, String name, int priority) {
         this.id = id;
         this.name = name;
         this.priority = priority;
+    }
+
+    public ThreadInfo copy() {
+        return new ThreadInfo(this.id, this.name, this.priority);
     }
 
     @Override

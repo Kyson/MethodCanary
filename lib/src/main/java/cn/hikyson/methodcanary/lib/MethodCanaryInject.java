@@ -3,6 +3,7 @@ package cn.hikyson.methodcanary.lib;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.Keep;
+import android.support.v4.util.Pools;
 
 import java.io.File;
 import java.util.*;
@@ -18,6 +19,8 @@ public class MethodCanaryInject {
     private static Map<ThreadInfo, List<MethodEvent>> sMethodEventMap = new HashMap<>();
     private static Handler sWorkHandler;
     private static MethodCanaryConfig sMethodCanaryConfig;
+    private static final int METHOD_COUNT_INIT_SIZE = 32;
+    private static Pools.SimplePool<ThreadInfo> sThreadInfoSimplePool;
 
     /**
      * install sdk
@@ -27,6 +30,7 @@ public class MethodCanaryInject {
     public static synchronized void install(MethodCanaryConfig methodCanaryConfig) {
         sMethodCanaryConfig = methodCanaryConfig;
         clearRuntime();
+        sThreadInfoSimplePool = new Pools.SimplePool<>(20);
         HandlerThread worker = new HandlerThread("method-canary-record");
         worker.start();
         sWorkHandler = new Handler(worker.getLooper());
@@ -37,6 +41,7 @@ public class MethodCanaryInject {
      */
     public static synchronized void uninstall() {
         clearRuntime();
+        sThreadInfoSimplePool = null;
         if (sWorkHandler != null) {
             sWorkHandler.getLooper().quit();
             sWorkHandler = null;
@@ -44,56 +49,48 @@ public class MethodCanaryInject {
     }
 
     @Keep
-    public static void onMethodEnter(int accessFlag, String className, String methodName, String desc) {
+    public static void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc) {
         if (sStopped) {
             return;
         }
-        Thread currentThread = Thread.currentThread();
-        final ThreadInfo threadInfo = new ThreadInfo(currentThread.getId(), currentThread.getName(), currentThread.getPriority());
-        final MethodEnterEvent methodEnterEvent = new MethodEnterEvent(className, accessFlag, methodName, desc, System.nanoTime());
-        sTaskRunningCount.incrementAndGet();
+        final Object[] params = onMethodEventPrepare();
         if (sStopped) {//double check for thread safe
             return;
         }
-        sWorkHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                List<MethodEvent> methodEvents = sMethodEventMap.get(threadInfo);
-                if (methodEvents == null) {
-                    methodEvents = new ArrayList<>();
-                    sMethodEventMap.put(threadInfo, methodEvents);
-                }
-                MethodCanaryLogger.log("方法进入:" + methodEnterEvent.methodName);
-                methodEvents.add(methodEnterEvent);
-                sMethodEventOfMapCount = sMethodEventOfMapCount + 1;
-                checkShouldWriteMethodEventsToFile(false);
-                sTaskRunningCount.decrementAndGet();
-            }
-        });
+        onMethodEventPostProcess((long) params[0], (String) params[1], (int) params[2], new MethodExitEvent(className, accessFlag, methodName, desc, (long) params[3]));
     }
 
     @Keep
-    public static void onMethodExit(int accessFlag, String className, final String methodName, String desc) {
+    public static void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc) {
         if (sStopped) {
             return;
         }
-        Thread currentThread = Thread.currentThread();
-        final ThreadInfo threadInfo = new ThreadInfo(currentThread.getId(), currentThread.getName(), currentThread.getPriority());
-        final MethodExitEvent methodExitEvent = new MethodExitEvent(className, accessFlag, methodName, desc, System.nanoTime());
-        sTaskRunningCount.incrementAndGet();
+        final Object[] params = onMethodEventPrepare();
         if (sStopped) {//double check for thread safe
             return;
         }
+        onMethodEventPostProcess((long) params[0], (String) params[1], (int) params[2], new MethodEnterEvent(className, accessFlag, methodName, desc, (long) params[3]));
+    }
+
+    private static Object[] onMethodEventPrepare() {
+        final long eventTimeNanos = System.nanoTime();
+        Thread currentThread = Thread.currentThread();
+        sTaskRunningCount.incrementAndGet();
+        return new Object[]{currentThread.getId(), currentThread.getName(), currentThread.getPriority(), eventTimeNanos};
+    }
+
+    private static void onMethodEventPostProcess(final long id, final String name, final int priority, final MethodEvent methodEvent) {
         sWorkHandler.post(new Runnable() {
             @Override
             public void run() {
+                final ThreadInfo threadInfo = obtainThreadInfo(id, name, priority);
                 List<MethodEvent> methodEvents = sMethodEventMap.get(threadInfo);
                 if (methodEvents == null) {
-                    methodEvents = new ArrayList<>();
-                    sMethodEventMap.put(threadInfo, methodEvents);
+                    methodEvents = new ArrayList<>(METHOD_COUNT_INIT_SIZE);
+                    sMethodEventMap.put(threadInfo.copy(), methodEvents);
                 }
-                MethodCanaryLogger.log("方法退出:" + methodExitEvent.methodName);
-                methodEvents.add(methodExitEvent);
+                releaseThreadInfo(threadInfo);
+                methodEvents.add(methodEvent);
                 sMethodEventOfMapCount = sMethodEventOfMapCount + 1;
                 checkShouldWriteMethodEventsToFile(false);
                 sTaskRunningCount.decrementAndGet();
@@ -127,8 +124,8 @@ public class MethodCanaryInject {
         if (sWorkHandler == null) {
             throw new Exception("please init method canary first.");
         }
-        sStopped = false;
         sStartTimeNanos = System.nanoTime();
+        sStopped = false;
         MethodCanaryLogger.log("开启监控成功");
     }
 
@@ -136,8 +133,8 @@ public class MethodCanaryInject {
      * record during last start monitor success
      */
     public static synchronized void stopMonitor() {
-        sStopped = true;
         sStopTimeNanos = System.nanoTime();
+        sStopped = true;
         MethodCanaryLogger.log("结束监控中...");
         if (sWorkHandler != null) {
             sTaskRunningCount.incrementAndGet();
@@ -171,4 +168,27 @@ public class MethodCanaryInject {
         }
         sTaskRunningCount.set(0);
     }
+
+    private static ThreadInfo obtainThreadInfo(long id, String name, int priority) {
+        ThreadInfo threadInfo = null;
+        if (sThreadInfoSimplePool != null) {
+            threadInfo = sThreadInfoSimplePool.acquire();
+        }
+        if (threadInfo == null) {
+            threadInfo = new ThreadInfo();
+//            MethodCanaryLogger.log("创建ThreadInfo对象");
+        } else {
+//            MethodCanaryLogger.log("复用ThreadInfo对象");
+        }
+        threadInfo.id = id;
+        threadInfo.name = name;
+        threadInfo.priority = priority;
+        return threadInfo;
+    }
+
+    private static void releaseThreadInfo(ThreadInfo threadInfo) {
+        sThreadInfoSimplePool.release(threadInfo);
+//        MethodCanaryLogger.log("归还ThreadInfo对象");
+    }
+
 }

@@ -67,7 +67,7 @@ public class UtilTest {
         methodEvents3.add(new MethodEnterEvent("cn/hikyson/methodcanary/sample/xxxx", 4, "methodNamexxx", "(Landroid/os/Bundle;)V", 3284437995006300L));
         methodEventMap.put(new ThreadInfo(147339, "Thread-8", 5), methodEvents3);
 
-        boolean result = Util.merge(file, methodEventMap);
+        boolean result = Util.mergeInToFile(file, methodEventMap);
         assertTrue(result);
         printFile(file);
     }
