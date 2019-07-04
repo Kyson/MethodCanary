@@ -65,7 +65,6 @@ public class MethodCanaryInject {
 //        MethodCanaryLogger.log("开启监控成功");
     }
 
-
     /**
      * record during last start monitor success
      */
@@ -81,10 +80,13 @@ public class MethodCanaryInject {
             sWorkHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryCallback != null) {
-                        sMethodCanaryConfig.methodCanaryCallback.outputToMemory(sStartTimeNanos, sStopTimeNanos, sMethodEventMap);
-                    }
+                    long start = sStartTimeNanos;
+                    long stop = sStopTimeNanos;
+                    Map<ThreadInfo, List<MethodEvent>> copy = new HashMap<>(sMethodEventMap);
                     clearRuntime();
+                    if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryCallback != null) {
+                        sMethodCanaryConfig.methodCanaryCallback.outputToMemory(start, stop, copy);
+                    }
 //                    MethodCanaryLogger.log("监控结束.");
                 }
             });
@@ -193,28 +195,6 @@ public class MethodCanaryInject {
         methodEvents.remove(methodEvent);
         sMethodEventOfMapCount = sMethodEventOfMapCount - 1;
     }
-
-//    private static boolean isNeedWriteToFile() {
-//        return sMethodCanaryConfig.methodEventThreshold > 0;
-//    }
-//
-//    private static void checkShouldWriteMethodEventsToFile(boolean isForce) {
-//        if (isNeedWriteToFile() && (isForce || sMethodEventOfMapCount >= sMethodCanaryConfig.methodEventThreshold)) {
-//            try {
-//                File record = Util.ensureRecordFile(sMethodCanaryConfig.app);
-//                long start = System.currentTimeMillis();
-//                boolean result = Util.mergeInToFile(record, sMethodEventMap);
-//                MethodCanaryLogger.log(String.format("超出方法数限制[%s]或强制合并进文件,结果[%s],消耗[%s]ms", sMethodCanaryConfig.methodEventThreshold, result, (System.currentTimeMillis() - start)));
-//                if (!result) {
-//                    throw new Exception("write method event to file fail.");
-//                }
-//                sMethodEventMap.clear();
-//                sMethodEventOfMapCount = 0;
-//            } catch (Exception e) {
-//                MethodCanaryLogger.log("Method event count is over threshold " + sMethodCanaryConfig.methodEventThreshold + ",but write to file fail.");
-//            }
-//        }
-//    }
 
     private static void clearRuntime() {
         sStopped = true;
