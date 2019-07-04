@@ -27,6 +27,14 @@ public class MethodCanaryInject {
     public static synchronized void stopMonitor() {
     }
 
+    public static synchronized boolean isMonitoring() {
+        return false;
+    }
+
+    public static synchronized boolean isInstalled() {
+        return false;
+    }
+
     @Keep
     public static void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc) {
     }

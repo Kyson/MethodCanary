@@ -44,18 +44,27 @@ public class MethodCanaryInject {
         }
     }
 
+    public static synchronized boolean isMonitoring() {
+        return isMonitoringInternal();
+    }
+
+    public static synchronized boolean isInstalled() {
+        return isInstalledInternal();
+    }
+
     public static synchronized void startMonitor() throws Exception {
-        if (!sStopped || sTaskRunningCount.get() > 0) {//正在运行中
+        if (isMonitoringInternal()) {//正在运行中
 //            MethodCanaryLogger.log("开启监控失败");
             throw new Exception("method canary is monitoring, please wait for monitor's stopping.");
         }
-        if (sWorkHandler == null) {
-            throw new Exception("please init method canary first.");
+        if (!isInstalledInternal()) {
+            throw new Exception("please install method canary first.");
         }
         sStartTimeNanos = System.nanoTime();
         sStopped = false;
 //        MethodCanaryLogger.log("开启监控成功");
     }
+
 
     /**
      * record during last start monitor success
@@ -104,6 +113,14 @@ public class MethodCanaryInject {
             return;
         }
         onMethodEventPostProcess((long) params[0], (String) params[1], (int) params[2], new MethodExitEvent(className, accessFlag, methodName, desc, (long) params[3]));
+    }
+
+    private static boolean isMonitoringInternal() {
+        return (!sStopped || sTaskRunningCount.get() > 0);
+    }
+
+    private static boolean isInstalledInternal() {
+        return sWorkHandler != null;
     }
 
     private static Object[] onMethodEventPrepare() {
