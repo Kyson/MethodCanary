@@ -2,6 +2,7 @@ package cn.hikyson.methodcanary.lib;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Process;
 import android.support.annotation.Keep;
 
 import java.util.*;
@@ -28,7 +29,7 @@ public class MethodCanaryInject {
     public static synchronized void install(MethodCanaryConfig methodCanaryConfig) {
         sMethodCanaryConfig = methodCanaryConfig;
         clearRuntime();
-        HandlerThread worker = new HandlerThread("method-canary-record");
+        HandlerThread worker = new HandlerThread("method-canary-record", Process.THREAD_PRIORITY_BACKGROUND);
         worker.start();
         sWorkHandler = new Handler(worker.getLooper());
     }
