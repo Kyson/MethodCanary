@@ -14,13 +14,14 @@ public class SampleLibClassA {
         this.sex = sex;
     }
 
-    public void growup() throws InterruptedException {
-        Thread.sleep(300);
+    public void growup(long cost) throws InterruptedException {
+        Thread.sleep(cost);
         this.age = this.age + 1;
     }
 
-    public void callMe() {
-        String name2 = name;
+    public String callMe() {
+        String call = "This is " + name;
+        return call;
     }
 
 }

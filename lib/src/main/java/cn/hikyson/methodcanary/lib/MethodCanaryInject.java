@@ -19,7 +19,7 @@ public class MethodCanaryInject {
     private static Map<ThreadInfo, Stack<MethodEvent>> sMethodEventStackMap = new HashMap<>();
     private static Handler sWorkHandler;
     private static MethodCanaryConfig sMethodCanaryConfig;
-    private static final int METHOD_COUNT_INIT_SIZE = 32;
+    private static final int METHOD_COUNT_INIT_SIZE = 64;
 
     /**
      * install sdk
@@ -142,7 +142,7 @@ public class MethodCanaryInject {
                     List<MethodEvent> methodEvents = sMethodEventMap.get(threadInfo);
                     ThreadInfo copy = null;
                     if (methodEvents == null) {
-                        methodEvents = new ArrayList<>(METHOD_COUNT_INIT_SIZE);
+                        methodEvents = new LinkedList<>();
                         copy = threadInfo.copy();
                         sMethodEventMap.put(copy, methodEvents);
                     }

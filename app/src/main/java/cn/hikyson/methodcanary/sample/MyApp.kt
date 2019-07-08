@@ -84,7 +84,7 @@ class MyApp : Application() {
         Thread(Runnable {
             MethodCanaryInject.install(
                 MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig()
-                    .lowCostThreshold(1000000 * 600)
+                    .lowCostThreshold(1000000 * 6)
                     .methodCanaryCallback(object : MethodCanaryCallback {
 
                         override fun onStopped(
@@ -106,20 +106,11 @@ class MyApp : Application() {
                                 stopTimeNanos,
                                 methodEventMap
                             )
-                            MethodCanaryInject.uninstall()
                         }
                     })
                     .build()
             )
             Logger.d("已经安装")
-            MethodCanaryInject.startMonitor()
-            Logger.d("开始监控")
-        }).start()
-
-        Thread(Runnable {
-            Thread.sleep(20000)
-            Logger.d("等待了20s，已停止")
-            MethodCanaryInject.stopMonitor()
         }).start()
     }
 
