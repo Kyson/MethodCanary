@@ -1,6 +1,11 @@
 package cn.hikyson.methodcanary.lib;
 
-public class MethodEvent {
+import android.support.annotation.Keep;
+
+import java.io.Serializable;
+
+@Keep
+public class MethodEvent implements Serializable {
     public String className;
     public int methodAccessFlag;
     public String methodName;

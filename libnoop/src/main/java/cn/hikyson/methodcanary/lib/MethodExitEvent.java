@@ -1,5 +1,8 @@
 package cn.hikyson.methodcanary.lib;
 
+import android.support.annotation.Keep;
+
+@Keep
 public class MethodExitEvent extends MethodEvent {
 
     public MethodExitEvent(String className, int methodAccessFlag, String methodName, String methodDesc, long eventNanoTime) {

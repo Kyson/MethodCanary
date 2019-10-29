@@ -1,7 +1,12 @@
 package cn.hikyson.methodcanary.lib;
 
 
-public class ThreadInfo {
+import android.support.annotation.Keep;
+
+import java.io.Serializable;
+
+@Keep
+public class ThreadInfo implements Serializable {
     public long id;
     public String name;
     public int priority;

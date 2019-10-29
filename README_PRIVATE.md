@@ -14,7 +14,9 @@ apply plugin: 'cn.hikyson.methodcanary.plugin'
 
 # Plugin Deploy
 
-修改根目录gradle.properties
+1. 修改根目录gradle.properties
+2. git tag
+3. git push
 
-https://travis-ci.org/Kyson/MethodCanary
+[https://travis-ci.org/Kyson/MethodCanary](https://travis-ci.org/Kyson/MethodCanary)
 

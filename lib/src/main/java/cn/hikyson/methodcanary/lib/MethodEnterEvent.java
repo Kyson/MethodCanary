@@ -1,5 +1,8 @@
 package cn.hikyson.methodcanary.lib;
 
+import android.support.annotation.Keep;
+
+@Keep
 public class MethodEnterEvent extends MethodEvent {
 
     public MethodEnterEvent(String className, int methodAccessFlag, String methodName, String methodDesc, long eventNanoTime) {

@@ -100,11 +100,11 @@ class MyApp : Application() {
                             methodEventMap: Map<ThreadInfo, List<MethodEvent>>
                         ) {
                             Logger.d(
-                                "收到内存中的消息%s：startTimeNanos:%s, stopTimeNanos:%s, outputToMemory:\n%s",
+                                "收到内存中的消息，共%s个线程：startTimeNanos:%s, stopTimeNanos:%s, outputToMemory:\n%s",
                                 methodEventMap.size,
                                 startTimeNanos,
                                 stopTimeNanos,
-                                methodEventMap
+                                methodEventMap2String(methodEventMap)
                             )
                         }
                     })
@@ -113,6 +113,19 @@ class MyApp : Application() {
             Logger.d("已经安装")
         }).start()
     }
+
+    private fun methodEventMap2String(methodEventMap: Map<ThreadInfo, List<MethodEvent>>?): String {
+        val sb = StringBuilder()
+        for (entry in methodEventMap?.entries!!) {
+            sb.append(entry.key).append("\n")
+            for (method in entry.value) {
+                sb.append(method).append("\n")
+            }
+            sb.append("\n")
+        }
+        return String(sb)
+    }
+
 
     internal fun readFile2BytesByChannel(file: File): ByteArray? {
         if (!isFileExists(file)) {
