@@ -1,8 +1,5 @@
 package cn.hikyson.methodcanary.lib;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Process;
 import android.support.annotation.Keep;
 
 import java.util.*;
@@ -17,53 +14,25 @@ public class MethodCanaryInject {
     private static int sMethodEventOfMapCount = 0;
     private static Map<ThreadInfo, List<MethodEvent>> sMethodEventMap = new HashMap<>();
     private static Map<ThreadInfo, Stack<MethodEvent>> sMethodEventStackMap = new HashMap<>();
-    private static Handler sWorkHandler;
+    private static MethodCanaryTaskQueue sTaskQueue;
     private static MethodCanaryConfig sMethodCanaryConfig;
-    private static final int METHOD_COUNT_INIT_SIZE = 64;
-
-    /**
-     * install sdk
-     *
-     * @param methodCanaryConfig
-     */
-    public static synchronized void install(MethodCanaryConfig methodCanaryConfig) {
-        sMethodCanaryConfig = methodCanaryConfig;
-        clearRuntime();
-        HandlerThread worker = new HandlerThread("method-canary-record", Process.THREAD_PRIORITY_BACKGROUND);
-        worker.start();
-        sWorkHandler = new Handler(worker.getLooper());
-    }
-
-    /**
-     * uninstall
-     */
-    public static synchronized void uninstall() {
-        clearRuntime();
-        if (sWorkHandler != null) {
-            sWorkHandler.getLooper().quit();
-            sWorkHandler = null;
-        }
-    }
 
     public static synchronized boolean isMonitoring() {
         return isMonitoringInternal();
     }
 
-    public static synchronized boolean isInstalled() {
-        return isInstalledInternal();
-    }
-
-    public static synchronized void startMonitor() throws Exception {
+    public static synchronized void startMonitor(MethodCanaryConfig methodCanaryConfig) throws Exception {
         if (isMonitoringInternal()) {//正在运行中
-//            MethodCanaryLogger.log("开启监控失败");
+            MethodCanaryLogger.log("开启监控失败");
             throw new Exception("method canary is monitoring, please wait for monitor's stopping.");
         }
-        if (!isInstalledInternal()) {
-            throw new Exception("please install method canary first.");
-        }
+        clearRuntime();
+        sMethodCanaryConfig = methodCanaryConfig;
+        sTaskQueue = new MethodCanaryTaskQueue();
+        sTaskQueue.start();
         sStartTimeNanos = System.nanoTime();
         sStopped = false;
-//        MethodCanaryLogger.log("开启监控成功");
+        MethodCanaryLogger.log("开启监控成功");
     }
 
     /**
@@ -72,23 +41,24 @@ public class MethodCanaryInject {
     public static synchronized void stopMonitor() {
         sStopTimeNanos = System.nanoTime();
         sStopped = true;
-//        MethodCanaryLogger.log("结束监控中...");
-        if (sWorkHandler != null) {
+        MethodCanaryLogger.log("结束监控中...");
+        if (sTaskQueue != null) {
             sTaskRunningCount.incrementAndGet();
             if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryCallback != null) {
                 sMethodCanaryConfig.methodCanaryCallback.onStopped(sStartTimeNanos, sStopTimeNanos);
             }
-            sWorkHandler.post(new Runnable() {
+            sTaskQueue.addTask(new Runnable() {
                 @Override
                 public void run() {
                     long start = sStartTimeNanos;
                     long stop = sStopTimeNanos;
                     Map<ThreadInfo, List<MethodEvent>> copy = new HashMap<>(sMethodEventMap);
-                    clearRuntime();
                     if (sMethodCanaryConfig != null && sMethodCanaryConfig.methodCanaryCallback != null) {
                         sMethodCanaryConfig.methodCanaryCallback.outputToMemory(start, stop, copy);
                     }
-//                    MethodCanaryLogger.log("监控结束.");
+                    sMethodCanaryConfig = null;
+                    clearRuntime();
+                    MethodCanaryLogger.log("监控结束.");
                 }
             });
         }
@@ -122,10 +92,6 @@ public class MethodCanaryInject {
         return (!sStopped || sTaskRunningCount.get() > 0);
     }
 
-    private static boolean isInstalledInternal() {
-        return sWorkHandler != null;
-    }
-
     private static Object[] onMethodEventPrepare() {
         final long eventTimeNanos = System.nanoTime();
         Thread currentThread = Thread.currentThread();
@@ -134,8 +100,8 @@ public class MethodCanaryInject {
     }
 
     private static void onMethodEventPostProcess(final long id, final String name, final int priority, final MethodEvent methodEvent) {
-        if (sWorkHandler != null) {
-            sWorkHandler.post(new Runnable() {
+        if (sTaskQueue != null) {
+            sTaskQueue.addTask(new Runnable() {
                 @Override
                 public void run() {
                     final ThreadInfo threadInfo = obtainThreadInfo(id, name, priority);
@@ -151,11 +117,9 @@ public class MethodCanaryInject {
                         methodEventStack = new Stack<>();
                         sMethodEventStackMap.put(copy == null ? threadInfo.copy() : copy, methodEventStack);
                     }
-//                    MethodCanaryLogger.log(String.format("开始处理方法事件，当前线程:%s", threadInfo));
                     if (methodEvent instanceof MethodEnterEvent) {
                         methodEventStack.push(methodEvent);
                         addMethodEvent(methodEvents, methodEvent);
-//                        MethodCanaryLogger.log(String.format("本次PUSH方法[%s]添加进来", methodEvent.methodName));
                     } else if (methodEvent instanceof MethodExitEvent) {
                         MethodEvent lastMethodEnterEvent = null;
                         try {
@@ -164,26 +128,13 @@ public class MethodCanaryInject {
                         }
                         if (lastMethodEnterEvent != null && (methodEvent.eventNanoTime - lastMethodEnterEvent.eventNanoTime) <= sMethodCanaryConfig.lowCostThreshold) {
                             removeMethodEvent(methodEvents, lastMethodEnterEvent);
-//                            checkMethodEvent(lastMethodEnterEvent, methodEvent);
-//                            MethodCanaryLogger.log(String.format("本次POP方法[%s]和上次PUSH方法[%s]被排除", methodEvent.methodName, lastMethodEnterEvent.methodName));
                         } else {
                             addMethodEvent(methodEvents, methodEvent);
-//                            MethodCanaryLogger.log(String.format("本次POP方法[%s]添加进来", methodEvent.methodName));
                         }
                     }
-//                    MethodCanaryLogger.log(String.format("结束处理方法事件，当前线程:%s", threadInfo));
                     sTaskRunningCount.decrementAndGet();
                 }
             });
-        }
-    }
-
-    private static void checkMethodEvent(MethodEvent first, MethodEvent second) {
-        if (!first.className.equals(second.className)
-                || !first.methodName.equals(second.methodName)
-                || !first.methodDesc.equals(second.methodDesc)
-                || first.methodAccessFlag != second.methodAccessFlag) {
-            throw new IllegalStateException("checkMethodEvent");
         }
     }
 
@@ -205,6 +156,10 @@ public class MethodCanaryInject {
         sMethodEventStackMap.clear();
         sMethodEventOfMapCount = 0;
         sTaskRunningCount.set(0);
+        if (sTaskQueue != null) {
+            sTaskQueue.stop();
+            sTaskQueue = null;
+        }
     }
 
     private static ThreadInfo sThreadInfoInstance = new ThreadInfo();

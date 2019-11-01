@@ -2,37 +2,28 @@ package cn.hikyson.methodcanary.lib;
 
 import android.support.annotation.Keep;
 
+import java.util.EmptyStackException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Keep
 public class MethodCanaryInject {
-    /**
-     * install sdk
-     *
-     * @param methodCanaryConfig
-     */
-    public static synchronized void install(MethodCanaryConfig methodCanaryConfig) {
+
+    public static synchronized boolean isMonitoring() {
+        return false;
     }
 
-    /**
-     * uninstall
-     */
-    public static synchronized void uninstall() {
-    }
-
-    public static synchronized void startMonitor() throws Exception {
+    public static synchronized void startMonitor(MethodCanaryConfig methodCanaryConfig) throws Exception {
     }
 
     /**
      * record during last start monitor success
      */
     public static synchronized void stopMonitor() {
-    }
-
-    public static synchronized boolean isMonitoring() {
-        return false;
-    }
-
-    public static synchronized boolean isInstalled() {
-        return false;
     }
 
     @Keep
