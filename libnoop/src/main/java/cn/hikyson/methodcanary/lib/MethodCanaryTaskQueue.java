@@ -5,11 +5,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 class MethodCanaryTaskQueue {
     private BlockingQueue<Runnable> mTaskQueue;
-    private final MethodCanaryTaskDispatcher mDispatcher;
+    private MethodCanaryTaskDispatcher mDispatcher;
 
     MethodCanaryTaskQueue() {
         mTaskQueue = new LinkedBlockingQueue<>();
-        mDispatcher = new MethodCanaryTaskDispatcher(this);
     }
 
     void addTask(Runnable runnable) {
@@ -20,16 +19,22 @@ class MethodCanaryTaskQueue {
         return mTaskQueue.take();
     }
 
-    void start() {
-        synchronized (mDispatcher) {
+    boolean isEmpty() {
+        return mTaskQueue.isEmpty();
+    }
+
+    synchronized void start() {
+        if (mDispatcher == null) {
+            mDispatcher = new MethodCanaryTaskDispatcher(this);
             mDispatcher.setName("MethodCanary-Record");
             mDispatcher.start();
         }
     }
 
-    void stop() {
-        synchronized (mDispatcher) {
+    synchronized void stop() {
+        if (mDispatcher != null) {
             mDispatcher.quit();
+            mDispatcher = null;
         }
     }
 }
