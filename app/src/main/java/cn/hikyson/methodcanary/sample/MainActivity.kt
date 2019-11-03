@@ -20,26 +20,8 @@ class MainActivity : AppCompatActivity() {
         this.findViewById<Button>(R.id.activity_main_test).setOnClickListener {
             Thread(Runnable {
                 Logger.d("开始执行SampleAppClassA中的方法")
-                for (i in 0..8000) {
-                    SampleAppClassA.testMethod1(5)
-                    SampleAppClassA.testMethod2()
-                    SampleAppClassA.testMethod3()
-                }
-                Logger.d("结束执行SampleAppClassA中的方法")
-            }).start()
-            Thread(Runnable {
-                Logger.d("开始执行SampleAppClassA中的方法")
-                for (i in 0..8000) {
-                    SampleAppClassA.testMethod1(5)
-                    SampleAppClassA.testMethod2()
-                    SampleAppClassA.testMethod3()
-                }
-                Logger.d("结束执行SampleAppClassA中的方法")
-            }).start()
-            Thread(Runnable {
-                Logger.d("开始执行SampleAppClassA中的方法")
-                for (i in 0..8000) {
-                    SampleAppClassA.testMethod1(5)
+                for (i in 0..10000) {
+                    SampleAppClassA.testMethod1(4)
                     SampleAppClassA.testMethod2()
                     SampleAppClassA.testMethod3()
                 }
@@ -47,25 +29,7 @@ class MainActivity : AppCompatActivity() {
             }).start()
             Thread(Runnable {
                 Logger.d("开始执行SampleLibClassA中的方法")
-                for (i in 0..8000) {
-                    val a = SampleLibClassA("name" + i, i, i % 2 == 0);
-                    a.callMe()
-                    a.growup(5);
-                }
-                Logger.d("结束执行SampleLibClassA中的方法")
-            }).start()
-            Thread(Runnable {
-                Logger.d("开始执行SampleLibClassA中的方法")
-                for (i in 0..8000) {
-                    val a = SampleLibClassA("name" + i, i, i % 2 == 0);
-                    a.callMe()
-                    a.growup(5);
-                }
-                Logger.d("结束执行SampleLibClassA中的方法")
-            }).start()
-            Thread(Runnable {
-                Logger.d("开始执行SampleLibClassA中的方法")
-                for (i in 0..8000) {
+                for (i in 0..10000) {
                     val a = SampleLibClassA("name" + i, i, i % 2 == 0);
                     a.callMe()
                     a.growup(5);
@@ -75,38 +39,14 @@ class MainActivity : AppCompatActivity() {
         }
         this.findViewById<Button>(R.id.activity_main_monitor).setOnClickListener {
             if (this.isStarted) {
-                MethodCanaryInject.stopMonitor()
-                Logger.d("stop monitor")
+                MethodCanary.get().stop(
+                    "1", MethodCanaryConfig(1)
+                ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
+//                    Logger.d(methodEventMap2String(methodEventMap))
+                    Logger.d("结束！！！")
+                }
             } else {
-                MethodCanaryInject.startMonitor(
-                    MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig()
-                        .lowCostThreshold(1000000 * 6)
-                        .methodCanaryCallback(object : MethodCanaryCallback {
-
-                            override fun onStopped(
-                                startTimeNanos: Long,
-                                stopTimeNanos: Long
-                            ) {
-                                Logger.d("正在停止...")
-                            }
-
-                            override fun outputToMemory(
-                                startTimeNanos: Long,
-                                stopTimeNanos: Long,
-                                methodEventMap: Map<ThreadInfo, List<MethodEvent>>
-                            ) {
-                                Logger.d(
-                                    "收到内存中的消息，共%s个线程：startTimeNanos:%s, stopTimeNanos:%s, outputToMemory:\n%s",
-                                    methodEventMap.size,
-                                    startTimeNanos,
-                                    stopTimeNanos,
-                                    methodEventMap2String(methodEventMap)
-                                )
-                            }
-                        })
-                        .build()
-                )
-                Logger.d("start monitor")
+                MethodCanary.get().start("1")
             }
             this.isStarted = !this.isStarted
             this.findViewById<Button>(R.id.activity_main_monitor)
@@ -131,43 +71,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun randomApi() {
         Thread(Runnable {
-            for (i in 0..2000) {
-                Thread.sleep(15)
-                try {
-                    MethodCanaryInject.startMonitor(
-                        MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig()
-                            .lowCostThreshold(1000000 * 150)
-                            .methodCanaryCallback(object : MethodCanaryCallback {
-
-                                override fun onStopped(
-                                    startTimeNanos: Long,
-                                    stopTimeNanos: Long
-                                ) {
-                                }
-
-                                override fun outputToMemory(
-                                    startTimeNanos: Long,
-                                    stopTimeNanos: Long,
-                                    methodEventMap: Map<ThreadInfo, List<MethodEvent>>
-                                ) {
-                                    Logger.d(
-                                        "startTimeNanos:%s, stopTimeNanos:%s, outputToMemory:\n%s",
-                                        startTimeNanos,
-                                        stopTimeNanos,
-                                        methodEventMap
-                                    )
-                                }
-                            })
-                            .build()
-                    )
-                } catch (e: Throwable) {
-                }
+            for (i in 0..1000) {
+                Thread.sleep(8)
+                MethodCanary.get().start(i.toString())
             }
         }).start()
         Thread(Runnable {
-            for (i in 0..2000) {
-                Thread.sleep(20)
-                MethodCanaryInject.stopMonitor()
+            for (i in 0..1000) {
+                Thread.sleep(12)
+                MethodCanary.get().stop(
+                    i.toString(),
+                    MethodCanaryConfig(1)
+                ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
+
+                }
             }
         }).start()
     }
