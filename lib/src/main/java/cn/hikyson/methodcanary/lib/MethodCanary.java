@@ -55,4 +55,8 @@ public class MethodCanary {
             MethodCanaryLogger.log("[MethodCanary] stopping all.");
         }
     }
+
+    public synchronized boolean isRunning(final String sessionTag) {
+        return mMethodCanarySessionInfos.containsKey(sessionTag);
+    }
 }

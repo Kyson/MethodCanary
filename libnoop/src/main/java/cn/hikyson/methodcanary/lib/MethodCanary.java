@@ -14,4 +14,8 @@ public class MethodCanary {
 
     public synchronized void stop(final String sessionTag, MethodCanaryConfig methodCanaryConfig, final MethodCanaryOnGetRecordsCallback methodCanaryOnGetRecordsCallback) {
     }
+
+    public synchronized boolean isRunning(final String sessionTag) {
+        return false;
+    }
 }
