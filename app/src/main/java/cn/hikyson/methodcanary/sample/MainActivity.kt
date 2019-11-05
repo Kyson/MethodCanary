@@ -1,5 +1,6 @@
 package cn.hikyson.methodcanary.sample
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -8,12 +9,16 @@ import cn.hikyson.methodcanary.samplelib.SampleLibClassA
 import com.orhanobut.logger.Logger
 
 
-class MainActivity : AppCompatActivity() {
+open class MainActivity : AppCompatActivity() {
     private var isStarted: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        this.findViewById<Button>(R.id.activity_main_to_main2).setOnClickListener {
+            val i = Intent(this@MainActivity, Main2Activity::class.java)
+            startActivity(i)
+        }
         this.findViewById<Button>(R.id.activity_main_test_once).setOnClickListener {
             SampleAppClassA.testMethod1(5)
         }
@@ -42,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                 MethodCanary.get().stop(
                     "1", MethodCanaryConfig(1)
                 ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
-//                    Logger.d(methodEventMap2String(methodEventMap))
+                    //                    Logger.d(methodEventMap2String(methodEventMap))
                     Logger.d("结束！！！")
                 }
             } else {
@@ -87,6 +92,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }).start()
+    }
+
+    override fun onStop() {
+        super.onStop()
     }
 
 }

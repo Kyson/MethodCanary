@@ -38,4 +38,10 @@
             android:layout_height="wrap_content"
             android:text="Logcat TAG:MethodCanary" />
 
+    <Button
+            android:id="@+id/activity_main_to_main2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="jumpToMain2Activity"/>
+
 </LinearLayout>

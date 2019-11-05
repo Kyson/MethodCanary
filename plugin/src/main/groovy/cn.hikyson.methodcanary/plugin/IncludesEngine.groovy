@@ -4,11 +4,11 @@ import javax.script.Invocable
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
-class InExcludesEngine implements IInExcludes {
+class IncludesEngine implements IInExcludes {
     private ScriptEngine mJsEngine
     private InternalExcludes mInternalExcludes
 
-    InExcludesEngine(InternalExcludes internalExcludes, String eval) {
+    IncludesEngine(InternalExcludes internalExcludes, String eval) {
         if (eval != null && eval.length() > 0) {
             this.mJsEngine = new ScriptEngineManager().getEngineByName("javascript");
             this.mJsEngine.eval(eval)
@@ -18,23 +18,14 @@ class InExcludesEngine implements IInExcludes {
 
     @Override
     boolean isMethodInclude(ClassInfo classInfo, MethodInfo methodInfo) {
+        if (this.mInternalExcludes != null && this.mInternalExcludes.isMethodExclude(classInfo, methodInfo)) {
+            //内部需要exclude
+            return false
+        }
         if (mJsEngine == null) {
             return true
         }
         boolean isInclude = ((Invocable) mJsEngine).invokeFunction("isInclude", classInfo, methodInfo)
         return isInclude
-    }
-
-    @Override
-    boolean isMethodExclude(ClassInfo classInfo, MethodInfo methodInfo) {
-        if (this.mInternalExcludes != null && this.mInternalExcludes.isMethodExclude(classInfo, methodInfo)) {
-            //内部需要exclude
-            return true
-        }
-        if (mJsEngine == null) {
-            return false
-        }
-        boolean isExclude = ((Invocable) mJsEngine).invokeFunction("isExclude", classInfo, methodInfo)
-        return isExclude
     }
 }

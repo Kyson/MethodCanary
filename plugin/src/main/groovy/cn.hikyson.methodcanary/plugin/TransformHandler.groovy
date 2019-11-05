@@ -40,14 +40,14 @@ public class TransformHandler {
         File methodCanaryDir = new File(intermediatesDir, "method_canary")
         FileUtils.forceDeleteOnExit(new File(methodCanaryDir, "inject_result.txt"))
         StringBuilder result = new StringBuilder()
-        InExcludesEngine inExcludesEngine = null;
+        IncludesEngine inExcludesEngine = null;
         File methodCanaryJsFile = new File(project.getRootDir(), "MethodCanary.js")
         if (methodCanaryJsFile.exists() && methodCanaryJsFile.isFile()) {
             String inExcludeEngineContent = FileUtils.readFileToString(methodCanaryJsFile)
-            inExcludesEngine = new InExcludesEngine(new InternalExcludes(), inExcludeEngineContent)
+            inExcludesEngine = new IncludesEngine(new InternalExcludes(), inExcludeEngineContent)
             project.logger.quiet("[MethodCanary] TransformHandler handle, inExcludeEngineContent:" + inExcludeEngineContent)
         } else {
-            inExcludesEngine = new InExcludesEngine(new InternalExcludes(), null)
+            inExcludesEngine = new IncludesEngine(new InternalExcludes(), null)
             project.logger.quiet("[MethodCanary] TransformHandler handle, No inExcludeEngine found.")
         }
         project.logger.quiet("[MethodCanary] Inject start.")
@@ -65,7 +65,7 @@ public class TransformHandler {
         project.logger.quiet("[MethodCanary] Generate result end.")
     }
 
-    static void handleDirectoryInput(Project project, DirectoryInput directoryInput, TransformOutputProvider outputProvider, InExcludesEngine inExcludesEngine, StringBuilder result) {
+    static void handleDirectoryInput(Project project, DirectoryInput directoryInput, TransformOutputProvider outputProvider, IncludesEngine inExcludesEngine, StringBuilder result) {
         if (directoryInput.file.isDirectory()) {
             directoryInput.file.eachFileRecurse { File file ->
                 if (file.name.endsWith(".class")) {
@@ -90,7 +90,7 @@ public class TransformHandler {
         FileUtils.copyDirectory(directoryInput.file, dest)
     }
 
-    static void handleJarInputs(Project project, JarInput jarInput, TransformOutputProvider outputProvider, InExcludesEngine inExcludesEngine, StringBuilder result) {
+    static void handleJarInputs(Project project, JarInput jarInput, TransformOutputProvider outputProvider, IncludesEngine inExcludesEngine, StringBuilder result) {
         if (jarInput.file.getAbsolutePath().endsWith(".jar")) {
             def jarName = jarInput.name
             def md5Name = DigestUtils.md5Hex(jarInput.file.getAbsolutePath())

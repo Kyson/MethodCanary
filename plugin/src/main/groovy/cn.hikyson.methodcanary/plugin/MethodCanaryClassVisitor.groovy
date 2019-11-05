@@ -6,11 +6,11 @@ import org.objectweb.asm.commons.AdviceAdapter
 
 class MethodCanaryClassVisitor extends ClassVisitor {
     private Project mProject
-    private InExcludesEngine mInExcludesEngine
+    private IncludesEngine mInExcludesEngine
     private ClassInfo mClassInfo
     private StringBuilder mResult
 
-    MethodCanaryClassVisitor(Project project, ClassVisitor cv, InExcludesEngine inExcludesEngine, StringBuilder result) {
+    MethodCanaryClassVisitor(Project project, ClassVisitor cv, IncludesEngine inExcludesEngine, StringBuilder result) {
         super(Opcodes.ASM5, cv)
         this.mProject = project
         this.mInExcludesEngine = inExcludesEngine
@@ -46,10 +46,10 @@ class MethodCanaryClassVisitor extends ClassVisitor {
         private Project mProject
         private ClassInfo mClassInfo
         private MethodInfo mMethodInfo
-        private InExcludesEngine mInExcludesEngine
+        private IncludesEngine mInExcludesEngine
         private StringBuilder mResult
 
-        MethodCanaryMethodVisitor(Project project, MethodVisitor mv, ClassInfo classInfo, MethodInfo methodInfo, InExcludesEngine inExcludesEngine, StringBuilder result) {
+        MethodCanaryMethodVisitor(Project project, MethodVisitor mv, ClassInfo classInfo, MethodInfo methodInfo, IncludesEngine inExcludesEngine, StringBuilder result) {
             super(Opcodes.ASM5, mv, methodInfo.access, methodInfo.name, methodInfo.desc)
             this.mProject = project
             this.mClassInfo = classInfo
@@ -60,7 +60,7 @@ class MethodCanaryClassVisitor extends ClassVisitor {
 
         @Override
         protected void onMethodEnter() {
-            if (!this.mInExcludesEngine.isMethodInclude(this.mClassInfo, this.mMethodInfo) || this.mInExcludesEngine.isMethodExclude(this.mClassInfo, this.mMethodInfo)) {
+            if (!this.mInExcludesEngine.isMethodInclude(this.mClassInfo, this.mMethodInfo)) {
 //                this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodEnter [EXCLUDE]: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
                 return
             }
@@ -76,7 +76,7 @@ class MethodCanaryClassVisitor extends ClassVisitor {
 
         @Override
         protected void onMethodExit(int i) {
-            if (!this.mInExcludesEngine.isMethodInclude(this.mClassInfo, this.mMethodInfo) || this.mInExcludesEngine.isMethodExclude(this.mClassInfo, this.mMethodInfo)) {
+            if (!this.mInExcludesEngine.isMethodInclude(this.mClassInfo, this.mMethodInfo)) {
 //                this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodExit [EXCLUDE]: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
                 return
             }
