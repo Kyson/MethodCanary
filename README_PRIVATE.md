@@ -14,9 +14,12 @@ apply plugin: 'cn.hikyson.methodcanary.plugin'
 
 # Plugin Deploy
 
+./gradlew :plugin bintrayUpload
+
+# Library Deploy
+
 1. 修改根目录gradle.properties
 2. git tag
 3. git push
 
 [https://travis-ci.org/Kyson/MethodCanary](https://travis-ci.org/Kyson/MethodCanary)
-
