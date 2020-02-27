@@ -65,15 +65,13 @@ class MethodCanaryMethodRecord {
     }
 
     private long getMethodEventCost(MethodEvent methodEvent) {
-        if (methodEvent instanceof MethodEnterEvent) {
-            MethodExitEvent pair = ((MethodEnterEvent) methodEvent).methodExitEvent;
-            if (pair != null) {
-                return pair.eventNanoTime - methodEvent.eventNanoTime;
+        if (methodEvent.isEnter) {
+            if (methodEvent.pairMethodEvent != null) {
+                return methodEvent.pairMethodEvent.eventNanoTime - methodEvent.eventNanoTime;
             }
-        } else if (methodEvent instanceof MethodExitEvent) {
-            MethodEnterEvent pair = ((MethodExitEvent) methodEvent).methodEnterEvent;
-            if (pair != null) {
-                return methodEvent.eventNanoTime - pair.eventNanoTime;
+        } else {
+            if (methodEvent.pairMethodEvent != null) {
+                return methodEvent.eventNanoTime - methodEvent.pairMethodEvent.eventNanoTime;
             }
         }
         return -1;
@@ -82,14 +80,14 @@ class MethodCanaryMethodRecord {
     void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc) {
         if (mIsRecording) {
             final long eventTimeNanos = System.nanoTime();
-            onMethodEventPostProcess(new MethodEnterEvent(className, accessFlag, methodName, desc, eventTimeNanos));
+            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, true, eventTimeNanos));
         }
     }
 
     void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc) {
         if (mIsRecording) {
             final long eventTimeNanos = System.nanoTime();
-            onMethodEventPostProcess(new MethodExitEvent(className, accessFlag, methodName, desc, eventTimeNanos));
+            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, false, eventTimeNanos));
         }
     }
 
@@ -115,16 +113,16 @@ class MethodCanaryMethodRecord {
                     mMethodEventStackMap.put(copy == null ? threadInfo.copy() : copy, methodEventStack);
                 }
                 methodEvents.add(methodEvent);
-                if (methodEvent instanceof MethodEnterEvent) {
+                if (methodEvent.isEnter) {
                     methodEventStack.push(methodEvent);
-                } else if (methodEvent instanceof MethodExitEvent) {
+                } else {
                     MethodEvent lastMethodEnterEvent = null;
                     if (!methodEventStack.empty()) {
                         lastMethodEnterEvent = methodEventStack.pop();
                     }
                     if (lastMethodEnterEvent != null) {
-                        ((MethodEnterEvent) lastMethodEnterEvent).methodExitEvent = (MethodExitEvent) methodEvent;
-                        ((MethodExitEvent) methodEvent).methodEnterEvent = (MethodEnterEvent) lastMethodEnterEvent;
+                        lastMethodEnterEvent.pairMethodEvent = methodEvent;
+                        methodEvent.pairMethodEvent = lastMethodEnterEvent;
                     }
                 }
             }
