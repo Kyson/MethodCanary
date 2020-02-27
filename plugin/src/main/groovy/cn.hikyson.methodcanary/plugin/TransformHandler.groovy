@@ -40,23 +40,23 @@ public class TransformHandler {
         File methodCanaryDir = new File(intermediatesDir, "method_canary")
         FileUtils.forceDeleteOnExit(new File(methodCanaryDir, "inject_result.txt"))
         StringBuilder result = new StringBuilder()
-        IncludesEngine inExcludesEngine = null;
-        File methodCanaryJsFile = new File(project.getRootDir(), "MethodCanary.js")
+        IncludesEngine includesEngine = null;
+        File methodCanaryJsFile = new File(project.getRootDir(), "AndroidGodEye-MethodCanary.js")
         if (methodCanaryJsFile.exists() && methodCanaryJsFile.isFile()) {
             String inExcludeEngineContent = FileUtils.readFileToString(methodCanaryJsFile)
-            inExcludesEngine = new IncludesEngine(new InternalExcludes(), inExcludeEngineContent)
+            includesEngine = new IncludesEngine(new InternalExcludes(), inExcludeEngineContent)
             project.logger.quiet("[MethodCanary] TransformHandler handle, inExcludeEngineContent:" + inExcludeEngineContent)
         } else {
-            inExcludesEngine = new IncludesEngine(new InternalExcludes(), null)
+            includesEngine = new IncludesEngine(new InternalExcludes(), null)
             project.logger.quiet("[MethodCanary] TransformHandler handle, No inExcludeEngine found.")
         }
         project.logger.quiet("[MethodCanary] Inject start.")
         inputs.each { TransformInput input ->
             input.directoryInputs.each { DirectoryInput directoryInput ->
-                handleDirectoryInput(project, directoryInput, outputProvider, inExcludesEngine, result)
+                handleDirectoryInput(project, directoryInput, outputProvider, includesEngine, result)
             }
             input.jarInputs.each { JarInput jarInput ->
-                handleJarInputs(project, jarInput, outputProvider, inExcludesEngine, result)
+                handleJarInputs(project, jarInput, outputProvider, includesEngine, result)
             }
         }
         project.logger.quiet("[MethodCanary] Inject end.")
@@ -65,14 +65,14 @@ public class TransformHandler {
         project.logger.quiet("[MethodCanary] Generate result end.")
     }
 
-    static void handleDirectoryInput(Project project, DirectoryInput directoryInput, TransformOutputProvider outputProvider, IncludesEngine inExcludesEngine, StringBuilder result) {
+    static void handleDirectoryInput(Project project, DirectoryInput directoryInput, TransformOutputProvider outputProvider, IncludesEngine includesEngine, StringBuilder result) {
         if (directoryInput.file.isDirectory()) {
             directoryInput.file.eachFileRecurse { File file ->
                 if (file.name.endsWith(".class")) {
 //                    project.logger.quiet("[MethodCanary] Dealing with class file [" + file.name + "]")
                     ClassReader classReader = new ClassReader(file.bytes)
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, inExcludesEngine, result)
+                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, includesEngine, result)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     byte[] code = classWriter.toByteArray()
                     FileOutputStream fos = new FileOutputStream(
@@ -90,7 +90,7 @@ public class TransformHandler {
         FileUtils.copyDirectory(directoryInput.file, dest)
     }
 
-    static void handleJarInputs(Project project, JarInput jarInput, TransformOutputProvider outputProvider, IncludesEngine inExcludesEngine, StringBuilder result) {
+    static void handleJarInputs(Project project, JarInput jarInput, TransformOutputProvider outputProvider, IncludesEngine includesEngine, StringBuilder result) {
         if (jarInput.file.getAbsolutePath().endsWith(".jar")) {
             def jarName = jarInput.name
             def md5Name = DigestUtils.md5Hex(jarInput.file.getAbsolutePath())
@@ -114,7 +114,7 @@ public class TransformHandler {
                     jarOutputStream.putNextEntry(zipEntry)
                     ClassReader classReader = new ClassReader(IOUtils.toByteArray(inputStream))
                     ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, inExcludesEngine, result)
+                    ClassVisitor cv = new MethodCanaryClassVisitor(project, classWriter, includesEngine, result)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     byte[] code = classWriter.toByteArray()
                     jarOutputStream.write(code)

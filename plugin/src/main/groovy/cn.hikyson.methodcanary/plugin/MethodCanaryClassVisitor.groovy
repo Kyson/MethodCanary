@@ -6,14 +6,14 @@ import org.objectweb.asm.commons.AdviceAdapter
 
 class MethodCanaryClassVisitor extends ClassVisitor {
     private Project mProject
-    private IncludesEngine mInExcludesEngine
+    private IncludesEngine mIncludesEngine
     private ClassInfo mClassInfo
     private StringBuilder mResult
 
-    MethodCanaryClassVisitor(Project project, ClassVisitor cv, IncludesEngine inExcludesEngine, StringBuilder result) {
+    MethodCanaryClassVisitor(Project project, ClassVisitor cv, IncludesEngine includesEngine, StringBuilder result) {
         super(Opcodes.ASM5, cv)
         this.mProject = project
-        this.mInExcludesEngine = inExcludesEngine
+        this.mIncludesEngine = includesEngine
         this.mClassInfo = new ClassInfo()
         this.mResult = result
     }
@@ -33,7 +33,7 @@ class MethodCanaryClassVisitor extends ClassVisitor {
         MethodInfo methodInfo = new MethodInfo(access, name, desc)
 //        this.mProject.logger.quiet("[MethodCanary] ClassVisitor visit method " + String.valueOf(methodInfo) + " " + String.valueOf(this.mClassInfo))
         MethodVisitor methodVisitor = cv.visitMethod(access, name, desc, signature, exceptions)
-        methodVisitor = new MethodCanaryMethodVisitor(this.mProject, methodVisitor, this.mClassInfo, methodInfo, this.mInExcludesEngine, this.mResult)
+        methodVisitor = new MethodCanaryMethodVisitor(this.mProject, methodVisitor, this.mClassInfo, methodInfo, this.mIncludesEngine, this.mResult)
         return methodVisitor
     }
 
@@ -46,21 +46,21 @@ class MethodCanaryClassVisitor extends ClassVisitor {
         private Project mProject
         private ClassInfo mClassInfo
         private MethodInfo mMethodInfo
-        private IncludesEngine mInExcludesEngine
+        private IncludesEngine mIncludesEngine
         private StringBuilder mResult
 
-        MethodCanaryMethodVisitor(Project project, MethodVisitor mv, ClassInfo classInfo, MethodInfo methodInfo, IncludesEngine inExcludesEngine, StringBuilder result) {
+        MethodCanaryMethodVisitor(Project project, MethodVisitor mv, ClassInfo classInfo, MethodInfo methodInfo, IncludesEngine includesEngine, StringBuilder result) {
             super(Opcodes.ASM5, mv, methodInfo.access, methodInfo.name, methodInfo.desc)
             this.mProject = project
             this.mClassInfo = classInfo
             this.mMethodInfo = methodInfo
-            this.mInExcludesEngine = inExcludesEngine
+            this.mIncludesEngine = includesEngine
             this.mResult = result
         }
 
         @Override
         protected void onMethodEnter() {
-            if (!this.mInExcludesEngine.isMethodInclude(this.mClassInfo, this.mMethodInfo)) {
+            if (!this.mIncludesEngine.isMethodInclude(this.mClassInfo, this.mMethodInfo)) {
 //                this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodEnter [EXCLUDE]: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
                 return
             }
@@ -76,7 +76,7 @@ class MethodCanaryClassVisitor extends ClassVisitor {
 
         @Override
         protected void onMethodExit(int i) {
-            if (!this.mInExcludesEngine.isMethodInclude(this.mClassInfo, this.mMethodInfo)) {
+            if (!this.mIncludesEngine.isMethodInclude(this.mClassInfo, this.mMethodInfo)) {
 //                this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodExit [EXCLUDE]: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
                 return
             }
