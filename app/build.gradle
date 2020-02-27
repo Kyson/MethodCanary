@@ -4,7 +4,10 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
-apply plugin: 'cn.hikyson.methodcanary.plugin'
+if (!DISABLE_PLUGIN) {
+    apply plugin: 'cn.hikyson.methodcanary.plugin'
+}
+
 
 android {
     compileSdkVersion 28

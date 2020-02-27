@@ -28,7 +28,7 @@ install:
     - sdkmanager --list || true
 
 script:
-    - ./gradlew clean build && ./gradlew :plugin:clean :plugin:build
+    - sh disable_plugin.sh && ./gradlew clean build && ./gradlew :plugin:clean :plugin:build && sh enable_plugin.sh
 
 notifications:
     email:
@@ -36,7 +36,7 @@ notifications:
 
 deploy:
     provider: script
-    script: echo deploying to jcenter... && ./gradlew clean build bintrayUpload -PbintrayUser=kyson -PbintrayKey=$BINTRAY_KEY -PdryRun=false && echo deployed to jcenter.
+    script: echo deploying to jcenter... && sh build_all_upload_maven.sh && echo deployed to jcenter.
     on:
       tags: true
       branch: master

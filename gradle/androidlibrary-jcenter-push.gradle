@@ -41,7 +41,7 @@ artifacts {
     archives sourcesJar
 }
 
-version = VERSION_NAME
+version = rootProject.ext.REAL_VERSION_NAME
 group = GROUP
 
 apply plugin: 'com.github.dcendents.android-maven'
