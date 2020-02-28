@@ -6,4 +6,4 @@ rm -rf repos
 
 ./gradlew :plugin:clean :plugin:uploadArchives
 
-sh enable_plugin.sh.sh
+sh enable_plugin.sh
