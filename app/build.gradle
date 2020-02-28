@@ -4,10 +4,12 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
-if (!DISABLE_PLUGIN) {
+if (!Boolean.parseBoolean(DISABLE_PLUGIN)) {
     apply plugin: 'cn.hikyson.methodcanary.plugin'
+    println "[AndroidGodEye] Method Canary plugin apply enable."
+} else {
+    println "[AndroidGodEye] Method Canary plugin apply disable."
 }
-
 
 android {
     compileSdkVersion 28

@@ -7,21 +7,26 @@ buildscript {
         maven {
             url uri('./repos')
         }
-        if (USE_ALI_REPO) {
+        if (Boolean.parseBoolean(USE_ALI_REPO)) {
             maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
             maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
             maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+            println "[AndroidGodEye] Method Canary buildscript repo use aliyun."
         } else {
             google()
             jcenter()
             mavenCentral()
+            println "[AndroidGodEye] Method Canary buildscript repo use maven/jcenter/google."
         }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        if (!DISABLE_PLUGIN) {
+        if (!Boolean.parseBoolean(DISABLE_PLUGIN)) {
             classpath "cn.hikyson.methodcanary:plugin:0.1"
+            println "[AndroidGodEye] Method Canary plugin classpath enable."
+        } else {
+            println "[AndroidGodEye] Method Canary plugin classpath disable."
         }
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
@@ -33,14 +38,16 @@ allprojects {
         maven {
             url uri('./repos')
         }
-        if (USE_ALI_REPO) {
+        if (Boolean.parseBoolean(USE_ALI_REPO)) {
             maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
             maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
             maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+            println "[AndroidGodEye] Method Canary repo use aliyun."
         } else {
             google()
             jcenter()
             mavenCentral()
+            println "[AndroidGodEye] Method Canary repo use maven/jcenter/google."
         }
     }
 }
