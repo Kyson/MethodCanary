@@ -34,64 +34,46 @@ debugImplementation 'cn.hikyson.methodcanary:libnoop:VERSION'
 
 ### Step1 Custom plugin
 
-By default, `cn.hikyson.methodcanary.plugin` will inject code to all methods, include a lot of unnecessary
+By default, `cn.hikyson.methodcanary.plugin` will inject code to all methods, include a lot of unnecessary methods.
 
-you can change this behavior by put js file `MethodCanary.js` in project root, content sample:
+You can change this behavior by put js file `AndroidGodEye-MethodCanary.js` in project root, content sample:
 
 ```
-function isExclude(classInfo,methodInfo){
-    if(
-    classInfo.name.startsWith('cn/hikyson/methodcanary/samplelib/R$')
-    || classInfo.name === 'cn/hikyson/methodcanary/samplelib/BuildConfig'
-    || classInfo.name === 'cn/hikyson/methodcanary/samplelib/R'
-    || classInfo.name.startsWith('cn/hikyson/methodcanary/sample/R$')
-    || classInfo.name === 'cn/hikyson/methodcanary/sample/BuildConfig'
-    || classInfo.name === 'cn/hikyson/methodcanary/sample/R'){
-        return true
-    }
-    return false
-}
-
 function isInclude(classInfo,methodInfo){
-    return classInfo.name.startsWith('cn/hikyson/methodcanary')
+    if(!classInfo.name.startsWith('cn/hikyson/methodcanary')){
+        return false;
+    }
+    if(classInfo.name.startsWith('android/support/')
+            || classInfo.name.startsWith('com/google/gson/')
+            || classInfo.name.startsWith('cn/hikyson/methodcanary/samplelib/R$')
+            || classInfo.name === 'cn/hikyson/methodcanary/samplelib/BuildConfig'
+            || classInfo.name === 'cn/hikyson/methodcanary/samplelib/R'
+            || classInfo.name.startsWith('cn/hikyson/methodcanary/sample/R$')
+            || classInfo.name === 'cn/hikyson/methodcanary/sample/BuildConfig'
+            || classInfo.name === 'cn/hikyson/methodcanary/sample/R'){
+            return false
+    }
+    return true
 }
 ```
 
 #### Note
 
-1. can not change function name and desc:`function isExclude(classInfo,methodInfo)` and `function isInclude(classInfo,methodInfo)`
-2. these two functions must return boolean, default false for `isExclude`, true for `isInclude`
-3. param `classInfo` has fields: `int access`,`String name`,`String superName`,`String[] interfaces`
-4. param `methodInfo` has fields: `int access`,`String name`,`String desc`
-5. write `MethodCanary.js` by javascript language
+1. Can not change function name and desc: `function isInclude(classInfo,methodInfo)`
+2. Functions must return boolean type, default True for `isInclude`
+3. Param `classInfo` has fields: `int access`,`String name`,`String superName`,`String[] interfaces`
+4. Param `methodInfo` has fields: `int access`,`String name`,`String desc`
+5. Write `AndroidGodEye-MethodCanary.js` by javascript language
 
 ### Step2
 
-Init MethodCanaryInject in application
-
-`MethodCanaryInject.init(MethodCanaryConfig methodCanaryConfig)`
-
-Build methodCanaryConfig:
-
 ```java
-MethodCanaryConfig.MethodCanaryConfigBuilder.aMethodCanaryConfig().app(application).methodEventThreshold(
-                1000
-            ).methodCanaryOutputCallback(
-                { methodEventMap, record ->
-                    // methodEventMap:store method event in memory
-                    // record:store method event in file
-                    // if method event over methodEventThreshold(1000),then methodEventMap->record
-                    // if you want to get all method events，you should merge methodEventMap and record
-                    // record file's contract：
-                    // [THREAD]id=1;name=main;priority=5
-                    // PUSH:et=155079652962024;cn=cn/hikyson/methodcanary/sample/MainActivity;ma=25;mn=access$isStarted$p;md=(Lcn/hikyson/methodcanary/sample/MainActivity;)Z
-                    // POP:et=155079653206024;cn=cn/hikyson/methodcanary/sample/MainActivity;ma=25;mn=access$isStarted$p;md=(Lcn/hikyson/methodcanary/sample/MainActivity;)Z                
-                }).build()
-```
-
-### Step3
-
-```java
-MethodCanaryInject.startMonitor()
-MethodCanaryInject.stopMonitor()
+// start recording
+MethodCanary.get().start("sessionName0")
+// stop recording
+MethodCanary.get().stop(
+                    "sessionName0", MethodCanaryConfig(5*1000000)
+                ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
+                    Logger.d("finish！！！")
+                }
 ```
