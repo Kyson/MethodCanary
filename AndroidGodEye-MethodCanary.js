@@ -14,9 +14,7 @@ function isInclude(classInfo,methodInfo){
     if(!classInfo.name.startsWith('cn/hikyson/methodcanary')){
         return false;
     }
-    if(classInfo.name.startsWith('android/support/')
-            || classInfo.name.startsWith('com/google/gson/')
-            || classInfo.name.startsWith('cn/hikyson/methodcanary/samplelib/R$')
+    if(classInfo.name.startsWith('cn/hikyson/methodcanary/samplelib/R$')
             || classInfo.name === 'cn/hikyson/methodcanary/samplelib/BuildConfig'
             || classInfo.name === 'cn/hikyson/methodcanary/samplelib/R'
             || classInfo.name.startsWith('cn/hikyson/methodcanary/sample/R$')
@@ -26,3 +24,6 @@ function isInclude(classInfo,methodInfo){
     }
     return true
 }
+
+
+

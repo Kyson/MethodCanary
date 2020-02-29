@@ -1,6 +1,8 @@
 package cn.hikyson.methodcanary.sample
 
+import android.app.Activity
 import android.app.Application
+import android.os.Bundle
 import cn.hikyson.methodcanary.lib.*
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
@@ -22,6 +24,32 @@ class MyApp : Application() {
             .tag("MethodCanary")
             .build()
         Logger.addLogAdapter(AndroidLogAdapter(formatStrategy));
+
+        this.registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityPaused(activity: Activity?) {
+            }
+
+            override fun onActivityResumed(activity: Activity?) {
+            }
+
+            override fun onActivityStarted(activity: Activity?) {
+            }
+
+            override fun onActivityDestroyed(activity: Activity?) {
+            }
+
+            override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
+            }
+
+            override fun onActivityStopped(activity: Activity?) {
+            }
+
+            override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
+                // activity.onCreated start -> activity.super.onCreated -> onActivityCreated -> activity.onCreated end
+            }
+
+        })
+
     }
 
 

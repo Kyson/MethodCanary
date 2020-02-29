@@ -9,13 +9,15 @@ class MethodCanaryClassVisitor extends ClassVisitor {
     private IncludesEngine mIncludesEngine
     private ClassInfo mClassInfo
     private StringBuilder mResult
+    private ClassReader mClassReader
 
-    MethodCanaryClassVisitor(Project project, ClassVisitor cv, IncludesEngine includesEngine, StringBuilder result) {
+    MethodCanaryClassVisitor(Project project, ClassReader classReader, ClassVisitor cv, IncludesEngine includesEngine, StringBuilder result) {
         super(Opcodes.ASM5, cv)
         this.mProject = project
         this.mIncludesEngine = includesEngine
         this.mClassInfo = new ClassInfo()
         this.mResult = result
+        this.mClassReader = classReader
     }
 
     @Override
