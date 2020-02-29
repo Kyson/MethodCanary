@@ -4,6 +4,8 @@
 
 MethodCanary是监控Android方法耗时的工具
 
+这个库用于[AndroidGodEye](https://github.com/Kyson/AndroidGodEye).
+
 [![Build Status](https://travis-ci.org/Kyson/MethodCanary.svg?branch=master)](https://travis-ci.org/Kyson/MethodCanary)
 
 ## Quick Start

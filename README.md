@@ -2,7 +2,9 @@
 
 [中文](https://github.com/Kyson/MethodCanary/blob/master/README_zh.md)
 
-MethodCanary is tool to record method invocations
+MethodCanary is tool to metric method cost.
+
+Written for [AndroidGodEye](https://github.com/Kyson/AndroidGodEye).
 
 [![Build Status](https://travis-ci.org/Kyson/MethodCanary.svg?branch=master)](https://travis-ci.org/Kyson/MethodCanary)
 
