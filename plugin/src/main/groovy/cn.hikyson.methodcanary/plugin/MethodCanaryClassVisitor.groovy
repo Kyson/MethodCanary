@@ -45,11 +45,11 @@ class MethodCanaryClassVisitor extends ClassVisitor {
     }
 
     static class MethodCanaryMethodVisitor extends AdviceAdapter {
-        private Project mProject
-        private ClassInfo mClassInfo
-        private MethodInfo mMethodInfo
-        private IncludesEngine mIncludesEngine
-        private StringBuilder mResult
+        public Project mProject
+        public ClassInfo mClassInfo
+        public MethodInfo mMethodInfo
+        public IncludesEngine mIncludesEngine
+        public StringBuilder mResult
 
         MethodCanaryMethodVisitor(Project project, MethodVisitor mv, ClassInfo classInfo, MethodInfo methodInfo, IncludesEngine includesEngine, StringBuilder result) {
             super(Opcodes.ASM5, mv, methodInfo.access, methodInfo.name, methodInfo.desc)
@@ -67,12 +67,8 @@ class MethodCanaryClassVisitor extends ClassVisitor {
                 return
             }
 //            this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodEnter start: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
-            mv.visitIntInsn(Opcodes.BIPUSH, this.mMethodInfo.access)
-            mv.visitLdcInsn(this.mClassInfo.name)
-            mv.visitLdcInsn(this.mMethodInfo.name)
-            mv.visitLdcInsn(this.mMethodInfo.desc)
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodEnter", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", false)
-            this.mResult.append("INJECT class [" + this.mClassInfo.name + "], method [" + String.valueOf(this.mMethodInfo) + "]").append("\n")
+            int type = ClassHelper.injectMethodEnter(this, mv)
+            this.mResult.append("PU: class [" + this.mClassInfo.name + "], method [" + String.valueOf(this.mMethodInfo) + "], type [" + MethodEventInjectProtocol.Type.toString(type) + "]").append("\n")
 //            this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodEnter end: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
         }
 
@@ -83,11 +79,8 @@ class MethodCanaryClassVisitor extends ClassVisitor {
                 return
             }
 //            this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodExit start: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
-            mv.visitIntInsn(Opcodes.BIPUSH, this.mMethodInfo.access)
-            mv.visitLdcInsn(this.mClassInfo.name)
-            mv.visitLdcInsn(this.mMethodInfo.name)
-            mv.visitLdcInsn(this.mMethodInfo.desc)
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodExit", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", false)
+            int type = ClassHelper.injectMethodExit(this, mv)
+            this.mResult.append("PO: class [" + this.mClassInfo.name + "], method [" + String.valueOf(this.mMethodInfo) + "], type [" + MethodEventInjectProtocol.Type.toString(type) + "]").append("\n")
 //            this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodExit end: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
         }
     }

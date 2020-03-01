@@ -1,9 +1,9 @@
 package cn.hikyson.methodcanary.plugin
 
 public class MethodInfo {
-    int access
-    String name
-    String desc
+    public int access
+    public String name
+    public String desc
 
     MethodInfo(int access, String name, String desc) {
         this.access = access

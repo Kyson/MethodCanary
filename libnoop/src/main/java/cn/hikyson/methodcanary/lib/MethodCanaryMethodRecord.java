@@ -29,16 +29,15 @@ class MethodCanaryMethodRecord {
         void onGetRecords(Map<ThreadInfo, List<MethodEvent>> methodEventMap);
     }
 
+
     /**
-     * get method recordings in time range
-     *
      * @param startNanoTime
      * @param stopNanoTime
      * @param methodCanaryConfig
-     * @return
+     * @param onGetRecordsCallback
      */
     void getRecords(final long startNanoTime, final long stopNanoTime, final MethodCanaryConfig methodCanaryConfig, final OnGetRecordsCallback onGetRecordsCallback) {
-        mTaskQueue.addTask(new Runnable() {
+        mTaskQueue.queueTask(new Runnable() {
             @Override
             public void run() {
                 Map<ThreadInfo, List<MethodEvent>> filtered = new HashMap<>();
@@ -79,15 +78,13 @@ class MethodCanaryMethodRecord {
 
     void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc) {
         if (mIsRecording) {
-            final long eventTimeNanos = System.nanoTime();
-            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, true, eventTimeNanos));
+            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, true, System.nanoTime()));
         }
     }
 
     void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc) {
         if (mIsRecording) {
-            final long eventTimeNanos = System.nanoTime();
-            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, false, eventTimeNanos));
+            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, false, System.nanoTime()));
         }
     }
 
@@ -96,7 +93,7 @@ class MethodCanaryMethodRecord {
         final long id = currentThread.getId();
         final String name = currentThread.getName();
         final int priority = currentThread.getPriority();
-        mTaskQueue.addTask(new Runnable() {
+        mTaskQueue.queueTask(new Runnable() {
             @Override
             public void run() {
                 final ThreadInfo threadInfo = obtainThreadInfo(id, name, priority);

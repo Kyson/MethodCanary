@@ -1,11 +1,7 @@
 package cn.hikyson.methodcanary.lib;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class MethodCanary {
-
     private static class InstanceHolder {
         private static MethodCanary sMethodCanary = new MethodCanary();
     }
@@ -17,15 +13,17 @@ public class MethodCanary {
     private MethodCanary() {
     }
 
-    public synchronized void start(String sessionTag) {
-
+    public void startCommonRecording(String sessionTag) {
     }
 
-    public synchronized void stop(final String sessionTag, MethodCanaryConfig methodCanaryConfig, final MethodCanaryOnGetRecordsCallback methodCanaryOnGetRecordsCallback) {
-
+    public void stopCommonRecording(final String sessionTag, MethodCanaryConfig methodCanaryConfig, final MethodCanaryOnGetRecordsCallback methodCanaryOnGetRecordsCallback) {
     }
 
-    public synchronized boolean isRunning(final String sessionTag) {
+    public boolean isCommonRecorderRunning(final String sessionTag) {
         return false;
     }
+
+    public void setOnPageLifecycleEventCallback(MethodCanaryForSpecial.OnPageLifecycleEventCallback onPageLifecycleEventCallback) {
+    }
+
 }

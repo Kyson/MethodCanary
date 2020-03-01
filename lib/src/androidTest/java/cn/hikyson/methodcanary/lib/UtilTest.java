@@ -1,7 +1,5 @@
 package cn.hikyson.methodcanary.lib;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.util.Log;
 
 import okio.*;
@@ -10,12 +8,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import static org.junit.Assert.*;
 
 public class UtilTest {
 

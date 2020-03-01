@@ -2,11 +2,10 @@ package cn.hikyson.methodcanary.plugin
 
 
 public class ClassInfo {
-    int access
-    String name
-    String superName
-    String[] interfaces
-
+    public int access
+    public String name
+    public String superName
+    public String[] interfaces
 
     @Override
     public String toString() {

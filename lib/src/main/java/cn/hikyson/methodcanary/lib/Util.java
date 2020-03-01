@@ -1,6 +1,9 @@
 package cn.hikyson.methodcanary.lib;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.Fragment;
+
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -195,6 +198,10 @@ public class Util {
             } catch (IOException var2) {
             }
         }
+    }
+
+    static boolean isPageType(Object o) {
+        return o instanceof Activity || o instanceof Fragment || o instanceof android.app.Fragment;
     }
 
 }

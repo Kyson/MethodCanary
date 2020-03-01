@@ -6,12 +6,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 class MethodCanaryTaskQueue {
     private BlockingQueue<Runnable> mTaskQueue;
     private MethodCanaryTaskDispatcher mDispatcher;
+    private String mName;
 
-    MethodCanaryTaskQueue() {
+    MethodCanaryTaskQueue(String name) {
         mTaskQueue = new LinkedBlockingQueue<>();
+        mName = name;
     }
 
-    void addTask(Runnable runnable) {
+    void queueTask(Runnable runnable) {
         mTaskQueue.offer(runnable);
     }
 
@@ -26,7 +28,7 @@ class MethodCanaryTaskQueue {
     synchronized void start() {
         if (mDispatcher == null) {
             mDispatcher = new MethodCanaryTaskDispatcher(this);
-            mDispatcher.setName("MethodCanary-Record");
+            mDispatcher.setName(this.mName);
             mDispatcher.start();
         }
     }

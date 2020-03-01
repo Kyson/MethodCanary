@@ -1,6 +1,5 @@
 package cn.hikyson.methodcanary.samplelib;
 
-import android.util.Log;
 
 public class SampleLibClassA {
 
