@@ -18,20 +18,19 @@ public class MethodCanary {
         methodCanaryForSpecial = new MethodCanaryForSpecial();
     }
 
-
-    public void startCommonRecording(String sessionTag) {
+    public void startMethodTracing(String sessionTag) {
         methodCanaryForCommon.start(sessionTag);
     }
 
-    public void stopCommonRecording(final String sessionTag, MethodCanaryConfig methodCanaryConfig, final MethodCanaryOnGetRecordsCallback methodCanaryOnGetRecordsCallback) {
+    public void stopMethodTracing(final String sessionTag, MethodCanaryConfig methodCanaryConfig, final MethodCanaryOnGetRecordsCallback methodCanaryOnGetRecordsCallback) {
         methodCanaryForCommon.stop(sessionTag, methodCanaryConfig, methodCanaryOnGetRecordsCallback);
     }
 
-    public boolean isCommonRecorderRunning(final String sessionTag) {
+    public boolean isMethodTraceRunning(final String sessionTag) {
         return methodCanaryForCommon.isRunning(sessionTag);
     }
 
-    public void setOnPageLifecycleEventCallback(MethodCanaryForSpecial.OnPageLifecycleEventCallback onPageLifecycleEventCallback) {
+    public void setOnPageLifecycleEventCallback(OnPageLifecycleEventCallback onPageLifecycleEventCallback) {
         methodCanaryForSpecial.setOnPageLifecycleEventCallback(onPageLifecycleEventCallback);
     }
 

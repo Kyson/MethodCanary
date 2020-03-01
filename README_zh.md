@@ -36,18 +36,27 @@ debugImplementation 'cn.hikyson.methodcanary:libnoop:VERSION'
 
 ### Step1 Custom plugin
 
-`cn.hikyson.methodcanary.plugin` 默认会给所有方法都注入记录的代码，其中很多其实都是没必要的
+`cn.hikyson.methodcanary.plugin`有如下开关控制
 
-你可以把很多不需要插桩的方法排除掉：在项目根目录下创建文件`AndroidGodEye-MethodCanary.js`，文件内容的样例如下:
+```groovy
+AndroidGodEye {
+        enableLifecycleTracer = true // 是否需要页面生命周期方法的插桩，默认true
+        enableMethodTracer = true // 是否需要普通的方法插桩，默认true
+        instrumentationRuleFilePath = "app/AndroidGodEye-MethodCanary2.js" // 定制插桩逻辑的js文件路径，默认项目根目录AndroidGodEye-MethodCanary.js
+        instrumentationRuleIncludeClassNamePrefix = ["cn/hikyson/methodcanary/sample"] // 定制插桩逻辑的类名前缀，默认null
+    }
+```
+
+> instrumentationRuleFilePath和instrumentationRuleIncludeClassNamePrefix是与关系，满足两者的方法才会插桩
+
+你可以把很多不需要插桩的方法排除掉
+
+1. instrumentationRuleIncludeClassNamePrefix中添加需要插桩的类前缀列表
+2. 在项目根目录下创建文件`AndroidGodEye-MethodCanary.js`，文件内容的样例如下:
 
 ```
 function isInclude(classInfo,methodInfo){
-    if(!classInfo.name.startsWith('cn/hikyson/methodcanary')){
-        return false;
-    }
-    if(classInfo.name.startsWith('android/support/')
-            || classInfo.name.startsWith('com/google/gson/')
-            || classInfo.name.startsWith('cn/hikyson/methodcanary/samplelib/R$')
+    if(classInfo.name.startsWith('cn/hikyson/methodcanary/samplelib/R$')
             || classInfo.name === 'cn/hikyson/methodcanary/samplelib/BuildConfig'
             || classInfo.name === 'cn/hikyson/methodcanary/samplelib/R'
             || classInfo.name.startsWith('cn/hikyson/methodcanary/sample/R$')
@@ -71,11 +80,15 @@ function isInclude(classInfo,methodInfo){
 
 ```java
 // 开始记录方法调用
-MethodCanary.get().start("sessionName0")
+MethodCanary.get().startMethodTracing("sessionName0")
 // 结束记录调用
-MethodCanary.get().stop(
+MethodCanary.get().stopMethodTracing(
                     "sessionName0", MethodCanaryConfig(5*1000000)
                 ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
                     Logger.d("结束！！！")
                 }
+// 监听页面生命周期的方法耗时
+MethodCanary.get().setOnPageLifecycleEventCallback { lifecycleExitMethodEvent, page ->
+            Logger.d(page.javaClass.simpleName + lifecycleExitMethodEvent)
+        }
 ```

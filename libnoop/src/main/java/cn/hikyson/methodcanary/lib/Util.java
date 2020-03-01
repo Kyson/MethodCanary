@@ -1,13 +1,11 @@
 package cn.hikyson.methodcanary.lib;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v4.app.Fragment;
 
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -29,34 +27,6 @@ public class Util {
     public static final String START_THREAD = "[THREAD]";
     public static final String START_METHOD_ENTER = "PUSH:";
     public static final String START_METHOD_EXIT = "POP:";
-
-    static final String RECORD_DIR_NAME = "method_canary";
-    static final String RECORD_FILE_NAME = "method_events.tmp";
-
-    static File ensureRecordFile(Context context) throws FileNotFoundException {
-        File dir = new File(context.getCacheDir(), RECORD_DIR_NAME);
-        if (dir.exists() && !dir.isDirectory()) {
-            if (!dir.delete()) {
-                throw new FileNotFoundException("method_canary file is not dir and can not be deleted.");
-            }
-        }
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                throw new FileNotFoundException("method_canary is not exist and can not be mk.");
-            }
-        }
-        return new File(dir, RECORD_FILE_NAME);
-    }
-
-    static File getRecordFile(Context context) {
-        File dir = new File(context.getCacheDir(), RECORD_DIR_NAME);
-        return new File(dir, RECORD_FILE_NAME);
-    }
-
-    static void deleteRecordFile(Context context) {
-        File f = getRecordFile(context);
-        boolean result = f.delete();
-    }
 
     static boolean mergeInToFile(File sourceFile, Map<ThreadInfo, List<MethodEvent>> old) {
         Map<ThreadInfo, List<MethodEvent>> methodEventMap = new HashMap<>(old);

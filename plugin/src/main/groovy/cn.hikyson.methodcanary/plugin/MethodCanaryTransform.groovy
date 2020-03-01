@@ -37,10 +37,11 @@ public class MethodCanaryTransform extends Transform {
 
     @Override
     void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
-        mProject.logger.quiet("[MethodCanary] ======================== transform start ========================")
+        mProject.logger.quiet("[AndroidGodEye][MethodCanary] ======================== transform start ========================")
         def startTime = System.currentTimeMillis()
         TransformHandler.handle(mProject, transformInvocation)
         def cost = (System.currentTimeMillis() - startTime) / 1000
-        mProject.logger.quiet("[MethodCanary] ======================== transform end, cost " + cost + " s ========================")
+        mProject.logger.quiet("[AndroidGodEye][MethodCanary] Submit issue in [https://github.com/Kyson/AndroidGodEye/issues] if you have any question.")
+        mProject.logger.quiet("[AndroidGodEye][MethodCanary] ======================== transform end, cost " + cost + " s ========================")
     }
 }

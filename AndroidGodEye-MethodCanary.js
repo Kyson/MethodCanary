@@ -11,9 +11,6 @@
          String desc}
 **/
 function isInclude(classInfo,methodInfo){
-    if(!classInfo.name.startsWith('cn/hikyson/methodcanary')){
-        return false;
-    }
     if(classInfo.name.startsWith('cn/hikyson/methodcanary/samplelib/R$')
             || classInfo.name === 'cn/hikyson/methodcanary/samplelib/BuildConfig'
             || classInfo.name === 'cn/hikyson/methodcanary/samplelib/R'
@@ -24,6 +21,3 @@ function isInclude(classInfo,methodInfo){
     }
     return true
 }
-
-
-

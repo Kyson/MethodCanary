@@ -61,4 +61,12 @@ class MethodCanaryForCommon {
         methodCanaryMethodRecord.onMethodExit(accessFlag, className, methodName, desc);
     }
 
+    MethodCanaryMethodRecord getMethodCanaryMethodRecord() {
+        return methodCanaryMethodRecord;
+    }
+
+    void setMethodCanaryMethodRecord(MethodCanaryMethodRecord methodCanaryMethodRecord) {
+        this.methodCanaryMethodRecord = methodCanaryMethodRecord;
+    }
+
 }

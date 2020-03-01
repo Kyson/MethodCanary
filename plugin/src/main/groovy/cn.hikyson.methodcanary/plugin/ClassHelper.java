@@ -52,55 +52,71 @@ public class ClassHelper {
 
     public static int injectMethodEnter(MethodCanaryClassVisitor.MethodCanaryMethodVisitor methodCanaryMethodVisitor, MethodVisitor mv) {
         if (isLifecycleMethod(methodCanaryMethodVisitor, mv)) {
-            mv.visitIntInsn(Opcodes.BIPUSH, methodCanaryMethodVisitor.mMethodInfo.access);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mClassInfo.name);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.name);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.desc);
-            mv.visitInsn(Opcodes.ICONST_1);
-            mv.visitInsn(Opcodes.ICONST_1);
-            mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
-            mv.visitInsn(Opcodes.DUP);
-            mv.visitInsn(Opcodes.ICONST_0);
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitInsn(Opcodes.AASTORE);
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodEnter", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/Object;)V", false);
-            return 1;
+            if (methodCanaryMethodVisitor.mAndroidGodEyeExtension.enableLifecycleTracer) {
+                mv.visitIntInsn(Opcodes.BIPUSH, methodCanaryMethodVisitor.mMethodInfo.access);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mClassInfo.name);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.name);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.desc);
+                mv.visitInsn(Opcodes.ICONST_1);
+                mv.visitInsn(Opcodes.ICONST_1);
+                mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
+                mv.visitInsn(Opcodes.DUP);
+                mv.visitInsn(Opcodes.ICONST_0);
+                mv.visitVarInsn(Opcodes.ALOAD, 0);
+                mv.visitInsn(Opcodes.AASTORE);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodEnter", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/Object;)V", false);
+                return 1;
+            } else {
+                return -1;
+            }
         } else {
-            mv.visitIntInsn(Opcodes.BIPUSH, methodCanaryMethodVisitor.mMethodInfo.access);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mClassInfo.name);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.name);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.desc);
-            mv.visitInsn(Opcodes.ICONST_0);
-            mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodEnter", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/Object;)V", false);
-            return 0;
+            if (methodCanaryMethodVisitor.mAndroidGodEyeExtension.enableMethodTracer) {
+                mv.visitIntInsn(Opcodes.BIPUSH, methodCanaryMethodVisitor.mMethodInfo.access);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mClassInfo.name);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.name);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.desc);
+                mv.visitInsn(Opcodes.ICONST_0);
+                mv.visitInsn(Opcodes.ACONST_NULL);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodEnter", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/Object;)V", false);
+                return 0;
+            } else {
+                return -1;
+            }
         }
     }
 
     public static int injectMethodExit(MethodCanaryClassVisitor.MethodCanaryMethodVisitor methodCanaryMethodVisitor, MethodVisitor mv) {
         if (isLifecycleMethod(methodCanaryMethodVisitor, mv)) {
-            mv.visitIntInsn(Opcodes.BIPUSH, methodCanaryMethodVisitor.mMethodInfo.access);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mClassInfo.name);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.name);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.desc);
-            mv.visitInsn(Opcodes.ICONST_1);
-            mv.visitInsn(Opcodes.ICONST_1);
-            mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
-            mv.visitInsn(Opcodes.DUP);
-            mv.visitInsn(Opcodes.ICONST_0);
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitInsn(Opcodes.AASTORE);
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodExit", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/Object;)V", false);
-            return 1;
+            if (methodCanaryMethodVisitor.mAndroidGodEyeExtension.enableLifecycleTracer) {
+                mv.visitIntInsn(Opcodes.BIPUSH, methodCanaryMethodVisitor.mMethodInfo.access);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mClassInfo.name);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.name);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.desc);
+                mv.visitInsn(Opcodes.ICONST_1);
+                mv.visitInsn(Opcodes.ICONST_1);
+                mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
+                mv.visitInsn(Opcodes.DUP);
+                mv.visitInsn(Opcodes.ICONST_0);
+                mv.visitVarInsn(Opcodes.ALOAD, 0);
+                mv.visitInsn(Opcodes.AASTORE);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodExit", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/Object;)V", false);
+                return 1;
+            } else {
+                return -1;
+            }
         } else {
-            mv.visitIntInsn(Opcodes.BIPUSH, methodCanaryMethodVisitor.mMethodInfo.access);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mClassInfo.name);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.name);
-            mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.desc);
-            mv.visitInsn(Opcodes.ICONST_0);
-            mv.visitInsn(Opcodes.ACONST_NULL);
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodExit", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/Object;)V", false);
-            return 0;
+            if (methodCanaryMethodVisitor.mAndroidGodEyeExtension.enableMethodTracer) {
+                mv.visitIntInsn(Opcodes.BIPUSH, methodCanaryMethodVisitor.mMethodInfo.access);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mClassInfo.name);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.name);
+                mv.visitLdcInsn(methodCanaryMethodVisitor.mMethodInfo.desc);
+                mv.visitInsn(Opcodes.ICONST_0);
+                mv.visitInsn(Opcodes.ACONST_NULL);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cn/hikyson/methodcanary/lib/MethodCanaryInject", "onMethodExit", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/Object;)V", false);
+                return 0;
+            } else {
+                return -1;
+            }
         }
     }
 

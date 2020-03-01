@@ -13,17 +13,17 @@ public class MethodCanary {
     private MethodCanary() {
     }
 
-    public void startCommonRecording(String sessionTag) {
+    public void startMethodTracing(String sessionTag) {
     }
 
-    public void stopCommonRecording(final String sessionTag, MethodCanaryConfig methodCanaryConfig, final MethodCanaryOnGetRecordsCallback methodCanaryOnGetRecordsCallback) {
+    public void stopMethodTracing(final String sessionTag, MethodCanaryConfig methodCanaryConfig, final MethodCanaryOnGetRecordsCallback methodCanaryOnGetRecordsCallback) {
     }
 
-    public boolean isCommonRecorderRunning(final String sessionTag) {
+    public boolean isMethodTraceRunning(final String sessionTag) {
         return false;
     }
 
-    public void setOnPageLifecycleEventCallback(MethodCanaryForSpecial.OnPageLifecycleEventCallback onPageLifecycleEventCallback) {
+    public void setOnPageLifecycleEventCallback(OnPageLifecycleEventCallback onPageLifecycleEventCallback) {
     }
 
 }

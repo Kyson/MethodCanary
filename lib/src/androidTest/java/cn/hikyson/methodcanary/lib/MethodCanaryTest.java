@@ -18,19 +18,19 @@ public class MethodCanaryTest {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                MethodCanary.get().start("1");
+                MethodCanary.get().startMethodTracing("1");
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                MethodCanary.get().start("2");
+                MethodCanary.get().startMethodTracing("2");
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                MethodCanary.get().stop("1", new MethodCanaryConfig(0), new MethodCanaryOnGetRecordsCallback() {
+                MethodCanary.get().stopMethodTracing("1", new MethodCanaryConfig(0), new MethodCanaryOnGetRecordsCallback() {
                     @Override
                     public void onGetRecords(String sessionTag, long startNanoTime, long stopNanoTime, Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
                         record1 = methodEventMap;
@@ -42,7 +42,7 @@ public class MethodCanaryTest {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                MethodCanary.get().stop("2", new MethodCanaryConfig(0), new MethodCanaryOnGetRecordsCallback() {
+                MethodCanary.get().stopMethodTracing("2", new MethodCanaryConfig(0), new MethodCanaryOnGetRecordsCallback() {
                     @Override
                     public void onGetRecords(String sessionTag, long startNanoTime, long stopNanoTime, Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
                         record2 = methodEventMap;
@@ -62,9 +62,9 @@ public class MethodCanaryTest {
                         e.printStackTrace();
                     }
                     if (i % 2 == 0) {
-                        MethodCanaryInject.onMethodExit(i, "class" + i, "method" + i, "desc" + i);
+                        MethodCanaryInject.onMethodExit(i, "class" + i, "method" + i, "desc" + i, 0, null);
                     } else {
-                        MethodCanaryInject.onMethodEnter(i, "class" + i, "method" + i, "desc" + i);
+                        MethodCanaryInject.onMethodEnter(i, "class" + i, "method" + i, "desc" + i, 0, null);
                     }
                 }
             }

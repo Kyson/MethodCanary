@@ -41,8 +41,4 @@ class MethodCanaryForSpecial {
             mOnPageLifecycleEventCallback.onLifecycleEvent(methodExitEvent, objs[0]);
         }
     }
-
-    interface OnPageLifecycleEventCallback {
-        void onLifecycleEvent(MethodEvent lifecycleExitMethodEvent, Object page);
-    }
 }

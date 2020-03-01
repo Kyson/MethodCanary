@@ -13,26 +13,26 @@ public class MethodCanaryMethodRecordTest {
 
     @Test
     public void getRecords() {
-        MethodCanaryTaskQueue methodCanaryTaskQueue = new MethodCanaryTaskQueue();
+        MethodCanaryTaskQueue methodCanaryTaskQueue = new MethodCanaryTaskQueue("AndroidGodEye-test");
         methodCanaryTaskQueue.start();
         MethodCanaryMethodRecord methodCanaryMethodRecord = new MethodCanaryMethodRecord(methodCanaryTaskQueue);
-        MethodCanary.get().methodCanaryMethodRecord = methodCanaryMethodRecord;
+        MethodCanary.get().methodCanaryForCommon.setMethodCanaryMethodRecord(methodCanaryMethodRecord);
         methodCanaryMethodRecord.startRecordRightNow();
         long startNano = System.nanoTime();
         for (int i = 0; i < 20; i++) {
             if (i % 2 == 0) {
-                MethodCanaryInject.onMethodExit(i, "class" + i, "method" + i, "desc" + i);
+                MethodCanaryInject.onMethodExit(i, "class" + i, "method" + i, "desc" + i, 0, null);
             } else {
-                MethodCanaryInject.onMethodEnter(i, "class" + i, "method" + i, "desc" + i);
+                MethodCanaryInject.onMethodEnter(i, "class" + i, "method" + i, "desc" + i, 0, null);
             }
         }
         methodCanaryMethodRecord.stopRecordRightNow();
         long stopNano = System.nanoTime();
         for (int i = 20; i < 40; i++) {
             if (i % 2 == 0) {
-                MethodCanaryInject.onMethodExit(i, "class" + i, "method" + i, "desc" + i);
+                MethodCanaryInject.onMethodExit(i, "class" + i, "method" + i, "desc" + i, 0, null);
             } else {
-                MethodCanaryInject.onMethodEnter(i, "class" + i, "method" + i, "desc" + i);
+                MethodCanaryInject.onMethodEnter(i, "class" + i, "method" + i, "desc" + i, 0, null);
             }
         }
         final CountDownLatch countDownLatch = new CountDownLatch(1);

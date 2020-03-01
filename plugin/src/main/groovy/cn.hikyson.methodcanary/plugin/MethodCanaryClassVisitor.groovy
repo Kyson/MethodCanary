@@ -7,14 +7,16 @@ import org.objectweb.asm.commons.AdviceAdapter
 class MethodCanaryClassVisitor extends ClassVisitor {
     private Project mProject
     private IncludesEngine mIncludesEngine
+    private AndroidGodEyeExtension mAndroidGodEyeExtension
     private ClassInfo mClassInfo
     private StringBuilder mResult
     private ClassReader mClassReader
 
-    MethodCanaryClassVisitor(Project project, ClassReader classReader, ClassVisitor cv, IncludesEngine includesEngine, StringBuilder result) {
+    MethodCanaryClassVisitor(Project project, ClassReader classReader, ClassVisitor cv, AndroidGodEyeExtension androidGodEyeExtension, IncludesEngine includesEngine, StringBuilder result) {
         super(Opcodes.ASM5, cv)
         this.mProject = project
         this.mIncludesEngine = includesEngine
+        this.mAndroidGodEyeExtension = androidGodEyeExtension
         this.mClassInfo = new ClassInfo()
         this.mResult = result
         this.mClassReader = classReader
@@ -35,7 +37,7 @@ class MethodCanaryClassVisitor extends ClassVisitor {
         MethodInfo methodInfo = new MethodInfo(access, name, desc)
 //        this.mProject.logger.quiet("[MethodCanary] ClassVisitor visit method " + String.valueOf(methodInfo) + " " + String.valueOf(this.mClassInfo))
         MethodVisitor methodVisitor = cv.visitMethod(access, name, desc, signature, exceptions)
-        methodVisitor = new MethodCanaryMethodVisitor(this.mProject, methodVisitor, this.mClassInfo, methodInfo, this.mIncludesEngine, this.mResult)
+        methodVisitor = new MethodCanaryMethodVisitor(this.mProject, methodVisitor, this.mClassInfo, methodInfo, mAndroidGodEyeExtension, this.mIncludesEngine, this.mResult)
         return methodVisitor
     }
 
@@ -48,14 +50,16 @@ class MethodCanaryClassVisitor extends ClassVisitor {
         public Project mProject
         public ClassInfo mClassInfo
         public MethodInfo mMethodInfo
+        public AndroidGodEyeExtension mAndroidGodEyeExtension
         public IncludesEngine mIncludesEngine
         public StringBuilder mResult
 
-        MethodCanaryMethodVisitor(Project project, MethodVisitor mv, ClassInfo classInfo, MethodInfo methodInfo, IncludesEngine includesEngine, StringBuilder result) {
+        MethodCanaryMethodVisitor(Project project, MethodVisitor mv, ClassInfo classInfo, MethodInfo methodInfo, AndroidGodEyeExtension androidGodEyeExtension, IncludesEngine includesEngine, StringBuilder result) {
             super(Opcodes.ASM5, mv, methodInfo.access, methodInfo.name, methodInfo.desc)
             this.mProject = project
             this.mClassInfo = classInfo
             this.mMethodInfo = methodInfo
+            this.mAndroidGodEyeExtension = androidGodEyeExtension
             this.mIncludesEngine = includesEngine
             this.mResult = result
         }
@@ -68,7 +72,9 @@ class MethodCanaryClassVisitor extends ClassVisitor {
             }
 //            this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodEnter start: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
             int type = ClassHelper.injectMethodEnter(this, mv)
-            this.mResult.append("PU: class [" + this.mClassInfo.name + "], method [" + String.valueOf(this.mMethodInfo) + "], type [" + MethodEventInjectProtocol.Type.toString(type) + "]").append("\n")
+            if (type >= 0) {
+                this.mResult.append("PU: class [" + this.mClassInfo.name + "], method [" + String.valueOf(this.mMethodInfo) + "], type [" + MethodEventInjectProtocol.Type.toString(type) + "]").append("\n")
+            }
 //            this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodEnter end: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
         }
 
@@ -80,7 +86,9 @@ class MethodCanaryClassVisitor extends ClassVisitor {
             }
 //            this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodExit start: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
             int type = ClassHelper.injectMethodExit(this, mv)
-            this.mResult.append("PO: class [" + this.mClassInfo.name + "], method [" + String.valueOf(this.mMethodInfo) + "], type [" + MethodEventInjectProtocol.Type.toString(type) + "]").append("\n")
+            if (type >= 0) {
+                this.mResult.append("PO: class [" + this.mClassInfo.name + "], method [" + String.valueOf(this.mMethodInfo) + "], type [" + MethodEventInjectProtocol.Type.toString(type) + "]").append("\n")
+            }
 //            this.mProject.logger.quiet("[MethodCanary] MethodVisitor onMethodExit end: class [" + String.valueOf(this.mClassInfo) + "], method [" + String.valueOf(this.mMethodInfo) + "]")
         }
     }

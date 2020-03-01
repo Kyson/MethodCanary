@@ -1,10 +1,8 @@
 package cn.hikyson.methodcanary.sample;
 
-import android.app.Activity;
-import android.app.Application;
+
 import android.content.Context;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -12,8 +10,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+
+import com.orhanobut.logger.Logger;
 
 public class Main2Activity extends MainActivity {
 
@@ -21,14 +20,19 @@ public class Main2Activity extends MainActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
 
             @Override
             public void onFragmentAttached(@NonNull FragmentManager fm, @NonNull Fragment f, @NonNull Context context) {
                 // fragment.onAttach start -> fragment.onAttach end -> onFragmentAttached
-                Log.d("MethodCanary", f.getClass().getSimpleName() + "onFragmentAttached0");
+                Logger.d(f.getClass().getSimpleName() + "onFragmentAttached0");
                 super.onFragmentAttached(fm, f, context);
-                Log.d("MethodCanary", f.getClass().getSimpleName() + "onFragmentAttached1");
+                Logger.d(f.getClass().getSimpleName() + "onFragmentAttached1");
             }
 
             @Override
@@ -43,9 +47,9 @@ public class Main2Activity extends MainActivity {
 
             @Override
             public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull Fragment f, @NonNull View v, @Nullable Bundle savedInstanceState) {
-                Log.d("MethodCanary", f.getClass().getSimpleName() + "onFragmentViewCreated0");
+                Logger.d(f.getClass().getSimpleName() + "onFragmentViewCreated0");
                 super.onFragmentViewCreated(fm, f, v, savedInstanceState);
-                Log.d("MethodCanary", f.getClass().getSimpleName() + "onFragmentViewCreated1");
+                Logger.d(f.getClass().getSimpleName() + "onFragmentViewCreated1");
             }
 
             @Override

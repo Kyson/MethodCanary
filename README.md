@@ -36,18 +36,27 @@ debugImplementation 'cn.hikyson.methodcanary:libnoop:VERSION'
 
 ### Step1 Custom plugin
 
-By default, `cn.hikyson.methodcanary.plugin` will inject code to all methods, include a lot of unnecessary methods.
+`cn.hikyson.methodcanary.plugin` has some configurations.
 
-You can change this behavior by put js file `AndroidGodEye-MethodCanary.js` in project root, content sample:
+```groovy
+AndroidGodEye {
+        enableLifecycleTracer = true // Need lifecycle methods instrumentation, default true
+        enableMethodTracer = true // Need common methods instrumentation, default true
+        instrumentationRuleFilePath = "app/AndroidGodEye-MethodCanary2.js" // Default AndroidGodEye-MethodCanary.js
+        instrumentationRuleIncludeClassNamePrefix = ["cn/hikyson/methodcanary/sample"] // Default null
+    }
+```
+
+> Methods Meet this condition `instrumentationRuleFilePath && instrumentationRuleIncludeClassNamePrefix` will be instrumented
+
+You can change instrumentation rule
+
+1. Add class prefix list to `instrumentationRuleIncludeClassNamePrefix`
+2. Put js file `AndroidGodEye-MethodCanary.js` in project root, content sample:
 
 ```
 function isInclude(classInfo,methodInfo){
-    if(!classInfo.name.startsWith('cn/hikyson/methodcanary')){
-        return false;
-    }
-    if(classInfo.name.startsWith('android/support/')
-            || classInfo.name.startsWith('com/google/gson/')
-            || classInfo.name.startsWith('cn/hikyson/methodcanary/samplelib/R$')
+    if(classInfo.name.startsWith('cn/hikyson/methodcanary/samplelib/R$')
             || classInfo.name === 'cn/hikyson/methodcanary/samplelib/BuildConfig'
             || classInfo.name === 'cn/hikyson/methodcanary/samplelib/R'
             || classInfo.name.startsWith('cn/hikyson/methodcanary/sample/R$')
@@ -71,11 +80,15 @@ function isInclude(classInfo,methodInfo){
 
 ```java
 // start recording
-MethodCanary.get().start("sessionName0")
+MethodCanary.get().startMethodTracing("sessionName0")
 // stop recording
-MethodCanary.get().stop(
+MethodCanary.get().stopMethodTracing(
                     "sessionName0", MethodCanaryConfig(5*1000000)
                 ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
                     Logger.d("finish！！！")
                 }
+// Observe page lifecycle method cost
+MethodCanary.get().setOnPageLifecycleEventCallback { lifecycleExitMethodEvent, page ->
+            Logger.d(page.javaClass.simpleName + lifecycleExitMethodEvent)
+        }
 ```

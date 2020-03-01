@@ -44,14 +44,14 @@ open class MainActivity : AppCompatActivity() {
         }
         this.findViewById<Button>(R.id.activity_main_monitor).setOnClickListener {
             if (this.isStarted) {
-                MethodCanary.get().stop(
+                MethodCanary.get().stopMethodTracing(
                     "1", MethodCanaryConfig(1)
                 ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
                     //                    Logger.d(methodEventMap2String(methodEventMap))
                     Logger.d("结束！！！")
                 }
             } else {
-                MethodCanary.get().start("1")
+                MethodCanary.get().startMethodTracing("1")
             }
             this.isStarted = !this.isStarted
             this.findViewById<Button>(R.id.activity_main_monitor)
@@ -78,13 +78,13 @@ open class MainActivity : AppCompatActivity() {
         Thread(Runnable {
             for (i in 0..1000) {
                 Thread.sleep(8)
-                MethodCanary.get().start(i.toString())
+                MethodCanary.get().startMethodTracing(i.toString())
             }
         }).start()
         Thread(Runnable {
             for (i in 0..1000) {
                 Thread.sleep(12)
-                MethodCanary.get().stop(
+                MethodCanary.get().stopMethodTracing(
                     i.toString(),
                     MethodCanaryConfig(1)
                 ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->

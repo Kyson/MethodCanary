@@ -6,9 +6,12 @@ apply plugin: 'kotlin-android-extensions'
 
 if (!Boolean.parseBoolean(DISABLE_PLUGIN)) {
     apply plugin: 'cn.hikyson.methodcanary.plugin'
-    println "[AndroidGodEye] Method Canary plugin apply enable."
-} else {
-    println "[AndroidGodEye] Method Canary plugin apply disable."
+    AndroidGodEye {
+        enableLifecycleTracer = true
+        enableMethodTracer = true
+        instrumentationRuleFilePath = "AndroidGodEye-MethodCanary.js"
+        instrumentationRuleIncludeClassNamePrefix = ["cn/hikyson/methodcanary/sample"]
+    }
 }
 
 android {
@@ -42,6 +45,4 @@ dependencies {
     implementation 'com.orhanobut:logger:2.2.0'
     releaseImplementation project(path: ':libnoop')
     debugImplementation project(path: ':lib')
-//    debugImplementation 'cn.hikyson.methodcanary:lib:0.10.0'
-//    releaseImplementation 'cn.hikyson.methodcanary:libnoop:0.10.0'
 }

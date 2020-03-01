@@ -3,7 +3,7 @@ package cn.hikyson.methodcanary.sample
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
-import cn.hikyson.methodcanary.lib.*
+import cn.hikyson.methodcanary.lib.MethodCanary
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -21,10 +21,17 @@ class MyApp : Application() {
             .showThreadInfo(false)
             .methodCount(0)
             .methodOffset(7)
-            .tag("MethodCanary")
+            .tag("AndroidGodEye")
             .build()
         Logger.addLogAdapter(AndroidLogAdapter(formatStrategy));
-
+        MethodCanary.get().setOnPageLifecycleEventCallback { lifecycleExitMethodEvent, page ->
+            Logger.d(
+                "[%s] %s cost %s ms",
+                page.javaClass.name,
+                lifecycleExitMethodEvent.methodName,
+                (lifecycleExitMethodEvent.eventNanoTime - lifecycleExitMethodEvent.pairMethodEvent.eventNanoTime) / 1000000
+            )
+        }
         this.registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityPaused(activity: Activity?) {
             }
@@ -47,9 +54,7 @@ class MyApp : Application() {
             override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
                 // activity.onCreated start -> activity.super.onCreated -> onActivityCreated -> activity.onCreated end
             }
-
         })
-
     }
 
 
