@@ -11,7 +11,7 @@ public class MethodEventHelper {
         String methodDesc = "I[]";
         boolean isEnter = true;
         long eventNanoTime = System.nanoTime();
-        MethodEvent methodEvent = new MethodEvent(className, methodAccessFlag, methodName, methodDesc, isEnter, eventNanoTime);
+        MethodEvent methodEvent = new MethodEvent(className, methodAccessFlag, methodName, methodDesc, isEnter, eventNanoTime, 0);
         return methodEvent;
     }
 
