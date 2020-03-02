@@ -43,6 +43,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(path: ':samplelib')
     implementation 'com.orhanobut:logger:2.2.0'
-    releaseImplementation project(path: ':libnoop')
-    debugImplementation project(path: ':lib')
+    implementation project(path: ':lib')
 }

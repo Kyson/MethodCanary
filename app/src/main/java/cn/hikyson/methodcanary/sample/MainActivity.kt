@@ -60,6 +60,16 @@ open class MainActivity : AppCompatActivity() {
         this.findViewById<Button>(R.id.activity_main_random).setOnClickListener {
             randomApi()
         }
+
+        this.findViewById<Button>(R.id.activity_main_to_main3_fake).setOnClickListener {
+            var main3FakeActivity = Main3FakeActivity()
+            main3FakeActivity.onCreate(null)
+            main3FakeActivity.onStop()
+            Thread(Runnable {
+                Thread.sleep(2000)
+                Child1Fragment().onPause()
+            }).start()
+        }
     }
 
     private fun methodEventMap2String(methodEventMap: Map<ThreadInfo, List<MethodEvent>>?): String {

@@ -30,8 +30,7 @@ Module com.android.application
 ```groovy
 apply plugin: 'cn.hikyson.methodcanary.plugin'
 
-releaseImplementation 'cn.hikyson.methodcanary:lib:VERSION'
-debugImplementation 'cn.hikyson.methodcanary:libnoop:VERSION'
+implementation 'cn.hikyson.methodcanary:lib:VERSION'
 ```
 
 ### Step1 Custom plugin
@@ -88,7 +87,8 @@ MethodCanary.get().stopMethodTracing(
                     Logger.d("结束！！！")
                 }
 // 监听页面生命周期的方法耗时
-MethodCanary.get().setOnPageLifecycleEventCallback { lifecycleExitMethodEvent, page ->
+MethodCanary.get().addOnPageLifecycleEventCallback { lifecycleExitMethodEvent, page ->
             Logger.d(page.javaClass.simpleName + lifecycleExitMethodEvent)
         }
+MethodCanary.get().removeOnPageLifecycleEventCallback()
 ```

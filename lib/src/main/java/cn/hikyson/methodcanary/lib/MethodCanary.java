@@ -30,8 +30,11 @@ public class MethodCanary {
         return methodCanaryForCommon.isRunning(sessionTag);
     }
 
-    public void setOnPageLifecycleEventCallback(OnPageLifecycleEventCallback onPageLifecycleEventCallback) {
-        methodCanaryForSpecial.setOnPageLifecycleEventCallback(onPageLifecycleEventCallback);
+    public void addOnPageLifecycleEventCallback(OnPageLifecycleEventCallback onPageLifecycleEventCallback) {
+        methodCanaryForSpecial.addOnPageLifecycleEventCallback(onPageLifecycleEventCallback);
     }
 
+    public void removeOnPageLifecycleEventCallback(OnPageLifecycleEventCallback onPageLifecycleEventCallback) {
+        methodCanaryForSpecial.removeOnPageLifecycleEventCallback(onPageLifecycleEventCallback);
+    }
 }

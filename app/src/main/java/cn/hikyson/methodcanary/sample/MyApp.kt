@@ -23,21 +23,21 @@ class MyApp : Application() {
             .methodOffset(7)
             .tag("AndroidGodEye")
             .build()
-        Logger.addLogAdapter(AndroidLogAdapter(formatStrategy));
-        MethodCanary.get().setOnPageLifecycleEventCallback { lifecycleMethodEvent, page ->
+        Logger.addLogAdapter(AndroidLogAdapter(formatStrategy))
+        MethodCanary.get().addOnPageLifecycleEventCallback { lifecycleMethodEvent, page ->
             if (lifecycleMethodEvent.isEnter) {
-                Logger.d(
-                    "[%s] %s start",
-                    page.javaClass.name + page.hashCode() + "|" + lifecycleMethodEvent.className,
-                    lifecycleMethodEvent.methodName
-                )
+//                Logger.d(
+//                    "[%s] %s start",
+//                    page.javaClass.name + page.hashCode() + "|" + lifecycleMethodEvent.className,
+//                    lifecycleMethodEvent.methodName
+//                )
             } else {
-                Logger.d(
-                    "[%s] %s cost %s ms",
-                    page.javaClass.name + page.hashCode() + "|" + lifecycleMethodEvent.className,
-                    lifecycleMethodEvent.methodName,
-                    (lifecycleMethodEvent.eventNanoTime - lifecycleMethodEvent.pairMethodEvent.eventNanoTime) / 1000000
-                )
+//                Logger.d(
+//                    "[%s] %s cost %s ms",
+//                    page.javaClass.name + page.hashCode() + "|" + lifecycleMethodEvent.className,
+//                    lifecycleMethodEvent.methodName,
+//                    (lifecycleMethodEvent.eventNanoTime - lifecycleMethodEvent.pairMethodEvent.eventNanoTime) / 1000000
+//                )
             }
         }
         this.registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {

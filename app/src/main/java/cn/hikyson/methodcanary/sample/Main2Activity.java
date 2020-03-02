@@ -119,6 +119,11 @@ public class Main2Activity extends MainActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

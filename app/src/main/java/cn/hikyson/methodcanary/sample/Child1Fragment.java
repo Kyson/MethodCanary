@@ -18,4 +18,14 @@ public class Child1Fragment extends BaseFragment {
                              Bundle savedInstanceState) {
         return new View(container.getContext());
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
