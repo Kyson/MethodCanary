@@ -53,12 +53,12 @@ class MethodCanaryForCommon {
         return mMethodCanarySessionInfos.containsKey(sessionTag);
     }
 
-    void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc) {
-        methodCanaryMethodRecord.onMethodEnter(accessFlag, className, methodName, desc);
+    void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc, int type, Object[] objs) {
+        methodCanaryMethodRecord.onMethodEnter(accessFlag, className, methodName, desc, type, objs);
     }
 
-    void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc) {
-        methodCanaryMethodRecord.onMethodExit(accessFlag, className, methodName, desc);
+    void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc, int type, Object[] objs) {
+        methodCanaryMethodRecord.onMethodExit(accessFlag, className, methodName, desc, type, objs);
     }
 
     MethodCanaryMethodRecord getMethodCanaryMethodRecord() {

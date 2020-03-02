@@ -13,7 +13,7 @@ public class MethodCanaryInject {
         if (type == 1 && objs != null && objs[0] != null && Util.isPageType(objs[0])) {
             MethodCanary.get().methodCanaryForSpecial.onMethodEnter(accessFlag, className, methodName, desc, type, objs);
         }
-        MethodCanary.get().methodCanaryForCommon.onMethodEnter(accessFlag, className, methodName, desc);
+        MethodCanary.get().methodCanaryForCommon.onMethodEnter(accessFlag, className, methodName, desc, type, objs);
     }
 
     @Keep
@@ -21,6 +21,6 @@ public class MethodCanaryInject {
         if (type == 1 && objs != null && objs[0] != null && Util.isPageType(objs[0])) {
             MethodCanary.get().methodCanaryForSpecial.onMethodExit(accessFlag, className, methodName, desc, type, objs);
         }
-        MethodCanary.get().methodCanaryForCommon.onMethodExit(accessFlag, className, methodName, desc);
+        MethodCanary.get().methodCanaryForCommon.onMethodExit(accessFlag, className, methodName, desc, type, objs);
     }
 }

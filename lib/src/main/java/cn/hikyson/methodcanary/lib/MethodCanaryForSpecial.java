@@ -20,15 +20,19 @@ class MethodCanaryForSpecial {
         if (Looper.getMainLooper() != Looper.myLooper()) {
             MethodCanaryLogger.log(String.format("MethodCanary [%s].[%s] is lifecycle event and must run in main thread!", className, methodName));
         }
-        mMethodEventStackMap.push(new MethodEvent(className, accessFlag, methodName, desc, true, System.nanoTime()));
+        MethodEvent methodEnterEvent = new MethodEvent(className, accessFlag, methodName, desc, true, System.nanoTime(), type);
+        mMethodEventStackMap.push(methodEnterEvent);
 //        Log.d("AndroidGodEye", String.format("[AndroidGodEye] MethodCanary [%s].[%s] start.", className, methodName));
+        if (mOnPageLifecycleEventCallback != null) {
+            mOnPageLifecycleEventCallback.onLifecycleEvent(methodEnterEvent, objs[0]);
+        }
     }
 
     void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc, int type, Object[] objs) {
         if (Looper.getMainLooper() != Looper.myLooper()) {
             MethodCanaryLogger.log(String.format("MethodCanary [%s].[%s] is lifecycle event and must run in main thread!", className, methodName));
         }
-        MethodEvent methodExitEvent = new MethodEvent(className, accessFlag, methodName, desc, false, System.nanoTime());
+        MethodEvent methodExitEvent = new MethodEvent(className, accessFlag, methodName, desc, false, System.nanoTime(), type);
         if (!mMethodEventStackMap.isEmpty()) {
             MethodEvent methodEnterEvent = mMethodEventStackMap.pop();
             if (methodEnterEvent != null) {

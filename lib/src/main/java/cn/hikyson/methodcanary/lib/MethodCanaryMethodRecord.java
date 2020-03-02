@@ -76,15 +76,15 @@ class MethodCanaryMethodRecord {
         return -1;
     }
 
-    void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc) {
+    void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc, int type, Object[] objs) {
         if (mIsRecording) {
-            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, true, System.nanoTime()));
+            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, true, System.nanoTime(), type));
         }
     }
 
-    void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc) {
+    void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc, int type, Object[] objs) {
         if (mIsRecording) {
-            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, false, System.nanoTime()));
+            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, false, System.nanoTime(), type));
         }
     }
 

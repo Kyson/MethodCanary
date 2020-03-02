@@ -23,9 +23,4 @@ public class MethodEventTest {
     public void testToString() {
         Log4Test.d(MethodEventHelper.createRandomMethodEvent().toString());
     }
-
-    @Test
-    public void toFormatString() {
-        Log4Test.d(MethodEventHelper.createRandomMethodEvent().toFormatString());
-    }
 }

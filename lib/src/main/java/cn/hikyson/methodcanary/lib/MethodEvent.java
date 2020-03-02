@@ -13,14 +13,16 @@ public class MethodEvent implements Serializable {
     public boolean isEnter;
     public long eventNanoTime;
     public MethodEvent pairMethodEvent;
+    public int type;
 
-    public MethodEvent(String className, int methodAccessFlag, String methodName, String methodDesc, boolean isEnter, long eventNanoTime) {
+    public MethodEvent(String className, int methodAccessFlag, String methodName, String methodDesc, boolean isEnter, long eventNanoTime, int type) {
         this.className = className;
         this.methodAccessFlag = methodAccessFlag;
         this.methodName = methodName;
         this.methodDesc = methodDesc;
         this.isEnter = isEnter;
         this.eventNanoTime = eventNanoTime;
+        this.type = type;
     }
 
     @Override
@@ -32,12 +34,7 @@ public class MethodEvent implements Serializable {
                 ", methodDesc='" + methodDesc + '\'' +
                 ", isEnter=" + isEnter +
                 ", eventNanoTime=" + eventNanoTime +
+                ", type=" + type +
                 '}';
-    }
-
-    public String toFormatString() {
-        return (isEnter ? "PU" : "PO") + ":et=" + eventNanoTime + ";cn=" + className
-                + ";ma=" + methodAccessFlag + ";mn="
-                + methodName + ";md=" + methodDesc;
     }
 }
