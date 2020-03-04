@@ -18,7 +18,7 @@ public class MethodCanaryMethodRecordTest {
         MethodCanaryMethodRecord methodCanaryMethodRecord = new MethodCanaryMethodRecord(methodCanaryTaskQueue);
         MethodCanary.get().methodCanaryForCommon.setMethodCanaryMethodRecord(methodCanaryMethodRecord);
         methodCanaryMethodRecord.startRecordRightNow();
-        long startNano = System.nanoTime();
+        long startMillis = System.currentTimeMillis();
         for (int i = 0; i < 20; i++) {
             if (i % 2 == 0) {
                 MethodCanaryInject.onMethodExit(i, "class" + i, "method" + i, "desc" + i, 0, null);
@@ -27,7 +27,7 @@ public class MethodCanaryMethodRecordTest {
             }
         }
         methodCanaryMethodRecord.stopRecordRightNow();
-        long stopNano = System.nanoTime();
+        long stopMillis = System.currentTimeMillis();
         for (int i = 20; i < 40; i++) {
             if (i % 2 == 0) {
                 MethodCanaryInject.onMethodExit(i, "class" + i, "method" + i, "desc" + i, 0, null);
@@ -36,7 +36,7 @@ public class MethodCanaryMethodRecordTest {
             }
         }
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        methodCanaryMethodRecord.getRecords(startNano, stopNano, new MethodCanaryConfig(0), new MethodCanaryMethodRecord.OnGetRecordsCallback() {
+        methodCanaryMethodRecord.getRecords(startMillis, stopMillis, new MethodCanaryConfig(0), new MethodCanaryMethodRecord.OnGetRecordsCallback() {
             @Override
             public void onGetRecords(Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
                 smethodEventMap = methodEventMap;

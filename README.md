@@ -82,8 +82,8 @@ function isInclude(classInfo,methodInfo){
 MethodCanary.get().startMethodTracing("sessionName0")
 // stop recording
 MethodCanary.get().stopMethodTracing(
-                    "sessionName0", MethodCanaryConfig(5*1000000)
-                ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
+                    "sessionName0", MethodCanaryConfig(5)
+                ) { sessionTag, startMillis, stopMillis, methodEventMap ->
                     Logger.d("finish！！！")
                 }
 // Observe page lifecycle method cost

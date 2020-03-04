@@ -10,8 +10,8 @@ public class MethodEventHelper {
         String methodName = "methodNameA";
         String methodDesc = "I[]";
         boolean isEnter = true;
-        long eventNanoTime = System.nanoTime();
-        MethodEvent methodEvent = new MethodEvent(className, methodAccessFlag, methodName, methodDesc, isEnter, eventNanoTime, 0);
+        long eventMillis = System.currentTimeMillis();
+        MethodEvent methodEvent = new MethodEvent(className, methodAccessFlag, methodName, methodDesc, isEnter, eventMillis, 0);
         return methodEvent;
     }
 

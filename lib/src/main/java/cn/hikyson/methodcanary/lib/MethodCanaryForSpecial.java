@@ -28,7 +28,7 @@ class MethodCanaryForSpecial {
         if (!filterMethod(accessFlag, className, methodName, desc, type, objs)) {
             return;
         }
-        MethodEvent methodEnterEvent = new MethodEvent(className, accessFlag, methodName, desc, true, System.nanoTime(), type);
+        MethodEvent methodEnterEvent = new MethodEvent(className, accessFlag, methodName, desc, true, System.currentTimeMillis(), type);
         mMethodEventStackMap.push(methodEnterEvent);
         MethodCanaryLogger.log(String.format("MethodCanary page [%s] lifecycle event [%s] start.", className, methodName));
         notifyOnPageLifecycleEventCallbacks(methodEnterEvent, objs[0]);
@@ -38,7 +38,7 @@ class MethodCanaryForSpecial {
         if (!filterMethod(accessFlag, className, methodName, desc, type, objs)) {
             return;
         }
-        MethodEvent methodExitEvent = new MethodEvent(className, accessFlag, methodName, desc, false, System.nanoTime(), type);
+        MethodEvent methodExitEvent = new MethodEvent(className, accessFlag, methodName, desc, false, System.currentTimeMillis(), type);
         if (!mMethodEventStackMap.isEmpty()) {
             MethodEvent methodEnterEvent = mMethodEventStackMap.pop();
             if (methodEnterEvent != null) {
@@ -46,7 +46,7 @@ class MethodCanaryForSpecial {
                 methodEnterEvent.pairMethodEvent = methodExitEvent;
             }
         }
-        MethodCanaryLogger.log(String.format("MethodCanary page [%s] lifecycle event [%s] end, cost %sms", className, methodName, (methodExitEvent.pairMethodEvent == null ? 0 : (methodExitEvent.eventNanoTime - methodExitEvent.pairMethodEvent.eventNanoTime) / 1000000)));
+        MethodCanaryLogger.log(String.format("MethodCanary page [%s] lifecycle event [%s] end, cost %sms", className, methodName, (methodExitEvent.pairMethodEvent == null ? 0 : (methodExitEvent.eventTimeMillis - methodExitEvent.pairMethodEvent.eventTimeMillis))));
         notifyOnPageLifecycleEventCallbacks(methodExitEvent, objs[0]);
     }
 

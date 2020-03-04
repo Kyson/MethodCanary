@@ -2,11 +2,11 @@ package cn.hikyson.methodcanary.lib;
 
 public class MethodCanaryConfig {
     /**
-     * nano time
+     * millis
      */
-    public long lowCostThresholdNanoTime;
+    public long lowCostThresholdTimeMillis;
 
-    public MethodCanaryConfig(long lowCostThresholdNanoTime) {
-        this.lowCostThresholdNanoTime = lowCostThresholdNanoTime;
+    public MethodCanaryConfig(long lowCostThresholdTimeMillis) {
+        this.lowCostThresholdTimeMillis = lowCostThresholdTimeMillis;
     }
 }

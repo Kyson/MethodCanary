@@ -82,8 +82,8 @@ function isInclude(classInfo,methodInfo){
 MethodCanary.get().startMethodTracing("sessionName0")
 // 结束记录调用
 MethodCanary.get().stopMethodTracing(
-                    "sessionName0", MethodCanaryConfig(5*1000000)
-                ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
+                    "sessionName0", MethodCanaryConfig(5)
+                ) { sessionTag, startMillis, stopMillis, methodEventMap ->
                     Logger.d("结束！！！")
                 }
 // 监听页面生命周期的方法耗时

@@ -18,6 +18,10 @@ public class MethodCanary {
         methodCanaryForSpecial = new MethodCanaryForSpecial();
     }
 
+    public void enableLog(boolean b) {
+        MethodCanaryLogger.enableLog(b);
+    }
+
     public void startMethodTracing(String sessionTag) {
         methodCanaryForCommon.start(sessionTag);
     }

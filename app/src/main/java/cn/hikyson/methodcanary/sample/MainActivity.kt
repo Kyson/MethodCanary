@@ -46,7 +46,7 @@ open class MainActivity : AppCompatActivity() {
             if (this.isStarted) {
                 MethodCanary.get().stopMethodTracing(
                     "1", MethodCanaryConfig(1)
-                ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
+                ) { sessionTag, startMillis, stopMillis, methodEventMap ->
                     //                    Logger.d(methodEventMap2String(methodEventMap))
                     Logger.d("结束！！！")
                 }
@@ -97,7 +97,7 @@ open class MainActivity : AppCompatActivity() {
                 MethodCanary.get().stopMethodTracing(
                     i.toString(),
                     MethodCanaryConfig(1)
-                ) { sessionTag, startNanoTime, stopNanoTime, methodEventMap ->
+                ) { sessionTag, startMillis, stopMillis, methodEventMap ->
 
                 }
             }

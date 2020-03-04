@@ -32,7 +32,7 @@ public class MethodCanaryTest {
                 }
                 MethodCanary.get().stopMethodTracing("1", new MethodCanaryConfig(0), new MethodCanaryOnGetRecordsCallback() {
                     @Override
-                    public void onGetRecords(String sessionTag, long startNanoTime, long stopNanoTime, Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
+                    public void onGetRecords(String sessionTag, long startMillis, long stopMillis, Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
                         record1 = methodEventMap;
                         countDownLatch.countDown();
                     }
@@ -44,7 +44,7 @@ public class MethodCanaryTest {
                 }
                 MethodCanary.get().stopMethodTracing("2", new MethodCanaryConfig(0), new MethodCanaryOnGetRecordsCallback() {
                     @Override
-                    public void onGetRecords(String sessionTag, long startNanoTime, long stopNanoTime, Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
+                    public void onGetRecords(String sessionTag, long startMillis, long stopMillis, Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
                         record2 = methodEventMap;
                         countDownLatch.countDown();
                     }

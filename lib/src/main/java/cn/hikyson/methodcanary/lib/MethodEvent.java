@@ -11,17 +11,17 @@ public class MethodEvent implements Serializable {
     public String methodName;
     public String methodDesc;
     public boolean isEnter;
-    public long eventNanoTime;
-    public MethodEvent pairMethodEvent;
+    public long eventTimeMillis;
     public int type;
+    public MethodEvent pairMethodEvent;
 
-    public MethodEvent(String className, int methodAccessFlag, String methodName, String methodDesc, boolean isEnter, long eventNanoTime, int type) {
+    public MethodEvent(String className, int methodAccessFlag, String methodName, String methodDesc, boolean isEnter, long eventTimeMillis, int type) {
         this.className = className;
         this.methodAccessFlag = methodAccessFlag;
         this.methodName = methodName;
         this.methodDesc = methodDesc;
         this.isEnter = isEnter;
-        this.eventNanoTime = eventNanoTime;
+        this.eventTimeMillis = eventTimeMillis;
         this.type = type;
     }
 
@@ -33,7 +33,7 @@ public class MethodEvent implements Serializable {
                 ", methodName='" + methodName + '\'' +
                 ", methodDesc='" + methodDesc + '\'' +
                 ", isEnter=" + isEnter +
-                ", eventNanoTime=" + eventNanoTime +
+                ", eventTimeMillis=" + eventTimeMillis +
                 ", type=" + type +
                 '}';
     }

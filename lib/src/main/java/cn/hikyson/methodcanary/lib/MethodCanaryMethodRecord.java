@@ -29,14 +29,13 @@ class MethodCanaryMethodRecord {
         void onGetRecords(Map<ThreadInfo, List<MethodEvent>> methodEventMap);
     }
 
-
     /**
-     * @param startNanoTime
-     * @param stopNanoTime
+     * @param startTimeMillis
+     * @param stopTimeMillis
      * @param methodCanaryConfig
      * @param onGetRecordsCallback
      */
-    void getRecords(final long startNanoTime, final long stopNanoTime, final MethodCanaryConfig methodCanaryConfig, final OnGetRecordsCallback onGetRecordsCallback) {
+    void getRecords(final long startTimeMillis, final long stopTimeMillis, final MethodCanaryConfig methodCanaryConfig, final OnGetRecordsCallback onGetRecordsCallback) {
         mTaskQueue.queueTask(new Runnable() {
             @Override
             public void run() {
@@ -44,10 +43,10 @@ class MethodCanaryMethodRecord {
                 for (Map.Entry<ThreadInfo, List<MethodEvent>> entry : mMethodEventMap.entrySet()) {
                     List<MethodEvent> filteredMethodEventsThread = new ArrayList<>();
                     for (MethodEvent methodEvent : entry.getValue()) {
-                        if (methodEvent.eventNanoTime >= startNanoTime
-                                && methodEvent.eventNanoTime <= stopNanoTime) {
+                        if (methodEvent.eventTimeMillis >= startTimeMillis
+                                && methodEvent.eventTimeMillis <= stopTimeMillis) {
                             long methodCost = getMethodEventCost(methodEvent);
-                            if (methodCost < 0 || methodCost > methodCanaryConfig.lowCostThresholdNanoTime) {
+                            if (methodCost < 0 || methodCost > methodCanaryConfig.lowCostThresholdTimeMillis) {
                                 filteredMethodEventsThread.add(methodEvent);
                             }
                         }
@@ -66,11 +65,11 @@ class MethodCanaryMethodRecord {
     private long getMethodEventCost(MethodEvent methodEvent) {
         if (methodEvent.isEnter) {
             if (methodEvent.pairMethodEvent != null) {
-                return methodEvent.pairMethodEvent.eventNanoTime - methodEvent.eventNanoTime;
+                return methodEvent.pairMethodEvent.eventTimeMillis - methodEvent.eventTimeMillis;
             }
         } else {
             if (methodEvent.pairMethodEvent != null) {
-                return methodEvent.eventNanoTime - methodEvent.pairMethodEvent.eventNanoTime;
+                return methodEvent.eventTimeMillis - methodEvent.pairMethodEvent.eventTimeMillis;
             }
         }
         return -1;
@@ -78,13 +77,13 @@ class MethodCanaryMethodRecord {
 
     void onMethodEnter(final int accessFlag, final String className, final String methodName, final String desc, int type, Object[] objs) {
         if (mIsRecording) {
-            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, true, System.nanoTime(), type));
+            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, true, System.currentTimeMillis(), type));
         }
     }
 
     void onMethodExit(final int accessFlag, final String className, final String methodName, final String desc, int type, Object[] objs) {
         if (mIsRecording) {
-            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, false, System.nanoTime(), type));
+            onMethodEventPostProcess(new MethodEvent(className, accessFlag, methodName, desc, false, System.currentTimeMillis(), type));
         }
     }
 

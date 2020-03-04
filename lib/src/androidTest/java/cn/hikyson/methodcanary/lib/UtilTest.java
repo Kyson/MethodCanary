@@ -1,5 +1,6 @@
 package cn.hikyson.methodcanary.lib;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import okio.*;
@@ -14,12 +15,30 @@ public class UtilTest {
 
     @Test
     public void testTime() throws IOException {
+        long startTime1 = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            System.currentTimeMillis();
+        }
+        long cost1 = System.currentTimeMillis() - startTime1;
+        Log.d("kyson========cost1 ", cost1 + "ms");
+
+
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 10000; i++) {
             System.nanoTime();
         }
         long cost = System.currentTimeMillis() - startTime;
         Log.d("kyson========cost ", cost + "ms");
+
+
+        long startTime2 = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            SystemClock.elapsedRealtime();
+        }
+        long cost2 = System.currentTimeMillis() - startTime2;
+        Log.d("kyson========cost2 ", cost2 + "ms");
+
+
     }
 
     @Test

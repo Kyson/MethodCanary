@@ -16,31 +16,31 @@ class MethodCanaryForCommon {
     }
 
     synchronized void start(String sessionTag) {
-        long startNanoTime = System.nanoTime();
-        MethodCanaryLogger.log("[MethodCanary] start session:" + sessionTag + ", startNanoTime:" + startNanoTime);
+        long startMillis = System.currentTimeMillis();
+        MethodCanaryLogger.log("[MethodCanary] start session:" + sessionTag + ", startMillis:" + startMillis);
         if (mMethodCanarySessionInfos.containsKey(sessionTag)) {
             throw new IllegalStateException("can not start same session.");
         }
-        mMethodCanarySessionInfos.put(sessionTag, startNanoTime);
+        mMethodCanarySessionInfos.put(sessionTag, startMillis);
         mTaskQueue.start();
         methodCanaryMethodRecord.startRecordRightNow();
     }
 
     synchronized void stop(final String sessionTag, MethodCanaryConfig methodCanaryConfig, final MethodCanaryOnGetRecordsCallback methodCanaryOnGetRecordsCallback) {
-        final long stopNanoTime = System.nanoTime();
-        MethodCanaryLogger.log("[MethodCanary] stop session:" + sessionTag + ", stopNanoTime:" + stopNanoTime);
-        final Long startNanoTime = mMethodCanarySessionInfos.remove(sessionTag);
-        if (startNanoTime == null || startNanoTime <= 0) {
+        final long stopMillis = System.currentTimeMillis();
+        MethodCanaryLogger.log("[MethodCanary] stop session:" + sessionTag + ", stopMillis:" + stopMillis);
+        final Long startMillis = mMethodCanarySessionInfos.remove(sessionTag);
+        if (startMillis == null || startMillis <= 0) {
             throw new IllegalStateException("can not stop because session not started.");
         }
-        methodCanaryMethodRecord.getRecords(startNanoTime, stopNanoTime, methodCanaryConfig, new MethodCanaryMethodRecord.OnGetRecordsCallback() {
+        methodCanaryMethodRecord.getRecords(startMillis, stopMillis, methodCanaryConfig, new MethodCanaryMethodRecord.OnGetRecordsCallback() {
             @Override
             public void onGetRecords(Map<ThreadInfo, List<MethodEvent>> methodEventMap) {
                 if (methodCanaryOnGetRecordsCallback != null) {
-                    methodCanaryOnGetRecordsCallback.onGetRecords(sessionTag, startNanoTime, stopNanoTime, methodEventMap);
+                    methodCanaryOnGetRecordsCallback.onGetRecords(sessionTag, startMillis, stopMillis, methodEventMap);
                 }
                 MethodCanaryLogger.log("[MethodCanary] on get records for session:" + sessionTag
-                        + ", startNanoTime:" + startNanoTime + ", stopNanoTime:" + stopNanoTime + ", thread count:" + methodEventMap.size());
+                        + ", startMillis:" + startMillis + ", stopMillis:" + stopMillis + ", thread count:" + methodEventMap.size());
             }
         });
         if (mMethodCanarySessionInfos.isEmpty()) {
