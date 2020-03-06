@@ -13,7 +13,7 @@ public class MethodEvent implements Serializable {
     public boolean isEnter;
     public long eventTimeMillis;
     public int type;
-    public MethodEvent pairMethodEvent;
+    public transient MethodEvent pairMethodEvent;
 
     public MethodEvent(String className, int methodAccessFlag, String methodName, String methodDesc, boolean isEnter, long eventTimeMillis, int type) {
         this.className = className;
