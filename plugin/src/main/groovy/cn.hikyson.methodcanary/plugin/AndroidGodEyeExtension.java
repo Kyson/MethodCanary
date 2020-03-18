@@ -16,8 +16,20 @@ public class AndroidGodEyeExtension {
         this.instrumentationRuleIncludeClassNamePrefix = null;
     }
 
-    boolean isEnable() {
-        return enableMethodTracer || enableLifecycleTracer;
+    public void enableMethodTracer(boolean enableMethodTracer) {
+        this.enableMethodTracer = enableMethodTracer;
+    }
+
+    public void enableLifecycleTracer(boolean enableLifecycleTracer) {
+        this.enableLifecycleTracer = enableLifecycleTracer;
+    }
+
+    public void instrumentationRuleFilePath(String instrumentationRuleFilePath) {
+        this.instrumentationRuleFilePath = instrumentationRuleFilePath;
+    }
+
+    public void instrumentationRuleIncludeClassNamePrefix(List<String> instrumentationRuleIncludeClassNamePrefix) {
+        this.instrumentationRuleIncludeClassNamePrefix = instrumentationRuleIncludeClassNamePrefix;
     }
 
     @Override
