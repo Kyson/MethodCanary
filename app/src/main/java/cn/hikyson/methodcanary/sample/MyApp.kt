@@ -24,6 +24,7 @@ class MyApp : Application() {
             .tag("AndroidGodEye")
             .build()
         Logger.addLogAdapter(AndroidLogAdapter(formatStrategy))
+        MethodCanary.get().enableLog(true);
         MethodCanary.get().addOnPageLifecycleEventCallback { lifecycleMethodEvent, page ->
             if (lifecycleMethodEvent.isEnter) {
 //                Logger.d(

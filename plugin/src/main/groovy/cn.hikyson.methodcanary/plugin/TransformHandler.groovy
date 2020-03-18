@@ -36,9 +36,7 @@ public class TransformHandler {
             outputProvider.deleteAll()
 //            project.logger.quiet("[MethodCanary] TransformHandler handle: outputProvider.deleteAll")
         }
-        File intermediatesDir = new File(project.buildDir, "intermediates")
-        File methodCanaryDir = new File(intermediatesDir, "android_god_eye")
-        FileUtils.forceDeleteOnExit(new File(methodCanaryDir, "method_canary_instrumentation.txt"))
+        FileUtils.forceDeleteOnExit(FileUtil.outputResult(project))
         StringBuilder result = new StringBuilder()
         AndroidGodEyeExtension androidGodEyeExtension = project.getExtensions().getByType(AndroidGodEyeExtension.class)
         project.logger.quiet("[AndroidGodEye][MethodCanary] AndroidGodEyeExtension: " + androidGodEyeExtension)
@@ -54,8 +52,8 @@ public class TransformHandler {
         }
         project.logger.quiet("[AndroidGodEye][MethodCanary] Inject end.")
         project.logger.quiet("[AndroidGodEye][MethodCanary] Generate result start.")
-        FileUtils.writeStringToFile(new File(methodCanaryDir, "method_canary_instrumentation.txt"), result.toString(), "utf-8", false)
-        project.logger.quiet("[AndroidGodEye][MethodCanary] Generate result end.")
+        FileUtils.writeStringToFile(FileUtil.outputResult(project), result.toString(), "utf-8", false)
+        project.logger.quiet(String.format("[AndroidGodEye][MethodCanary] Generate result end: %s", FileUtil.outputResult(project).absolutePath))
     }
 
     static void handleDirectoryInput(Project project, DirectoryInput directoryInput, TransformOutputProvider outputProvider, AndroidGodEyeExtension androidGodEyeExtension, IncludesEngine includesEngine, StringBuilder result) {

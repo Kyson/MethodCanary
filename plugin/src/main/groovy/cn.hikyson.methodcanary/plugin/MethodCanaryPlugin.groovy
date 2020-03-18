@@ -9,7 +9,7 @@ public class MethodCanaryPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        project.logger.quiet("[AndroidGodEye][MethodCanary] Plugin applying...")
+        project.logger.quiet("[AndroidGodEye][MethodCanary] Plugin applied.")
         project.extensions.create("AndroidGodEye", AndroidGodEyeExtension.class)
         try {
             if (!project.plugins.hasPlugin(AppPlugin)) {
@@ -18,13 +18,11 @@ public class MethodCanaryPlugin implements Plugin<Project> {
             def android = project.extensions.android
             if (android != null) {
                 android.registerTransform(new MethodCanaryTransform(project))
-                project.logger.quiet("[AndroidGodEye][MethodCanary] Transform Registered.")
             } else {
                 Util.throwException('[AndroidGodEye][MethodCanary] Extension "android" can not be found.')
             }
         } catch (Throwable e) {
             Util.throwException(String.valueOf(e))
         }
-        project.logger.quiet("[AndroidGodEye][MethodCanary] Plugin applied.")
     }
 }

@@ -7,10 +7,10 @@ apply plugin: 'kotlin-android-extensions'
 if (!Boolean.parseBoolean(DISABLE_PLUGIN)) {
     apply plugin: 'cn.hikyson.methodcanary.plugin'
     AndroidGodEye {
-        enableLifecycleTracer = true
-        enableMethodTracer = true
-        instrumentationRuleFilePath = "AndroidGodEye-MethodCanary.js"
-        instrumentationRuleIncludeClassNamePrefix = ["cn/hikyson/methodcanary/sample"]
+        enableLifecycleTracer true
+        enableMethodTracer true
+        instrumentationRuleFilePath "AndroidGodEye-MethodCanary.js"
+        instrumentationRuleIncludeClassNamePrefix(["cn/hikyson/methodcanary/sample"])
     }
 }
 
