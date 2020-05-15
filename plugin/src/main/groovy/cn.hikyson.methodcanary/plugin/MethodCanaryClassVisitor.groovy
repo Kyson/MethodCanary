@@ -13,7 +13,7 @@ class MethodCanaryClassVisitor extends ClassVisitor {
     private ClassReader mClassReader
 
     MethodCanaryClassVisitor(Project project, ClassReader classReader, ClassVisitor cv, AndroidGodEyeExtension androidGodEyeExtension, IncludesEngine includesEngine, StringBuilder result) {
-        super(Opcodes.ASM5, cv)
+        super(Opcodes.ASM6, cv)
         this.mProject = project
         this.mIncludesEngine = includesEngine
         this.mAndroidGodEyeExtension = androidGodEyeExtension
@@ -55,7 +55,7 @@ class MethodCanaryClassVisitor extends ClassVisitor {
         public StringBuilder mResult
 
         MethodCanaryMethodVisitor(Project project, MethodVisitor mv, ClassInfo classInfo, MethodInfo methodInfo, AndroidGodEyeExtension androidGodEyeExtension, IncludesEngine includesEngine, StringBuilder result) {
-            super(Opcodes.ASM5, mv, methodInfo.access, methodInfo.name, methodInfo.desc)
+            super(Opcodes.ASM6, mv, methodInfo.access, methodInfo.name, methodInfo.desc)
             this.mProject = project
             this.mClassInfo = classInfo
             this.mMethodInfo = methodInfo
