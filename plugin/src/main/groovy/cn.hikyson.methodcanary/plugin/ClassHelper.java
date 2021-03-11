@@ -24,7 +24,7 @@ public class ClassHelper {
     private static MethodInfoForLifecycle ON_FRAGMENT_STOP = new MethodInfoForLifecycle("onStop", "()V");
     private static MethodInfoForLifecycle ON_FRAGMENT_SAVE_INSTANCE_STATE = new MethodInfoForLifecycle("onSaveInstanceState", "(Landroid/os/Bundle;)V");
     private static MethodInfoForLifecycle ON_FRAGMENT_VIEW_DESTROY = new MethodInfoForLifecycle("onDestroyView", "()V");
-    private static MethodInfoForLifecycle ON_FRAGMENT_DESTROY = new MethodInfoForLifecycle("onDestory", "()V");
+    private static MethodInfoForLifecycle ON_FRAGMENT_DESTROY = new MethodInfoForLifecycle("onDestroy", "()V");
     private static MethodInfoForLifecycle ON_FRAGMENT_DETACH = new MethodInfoForLifecycle("onDetach", "()V");
 
     private static Set<MethodInfoForLifecycle> LIFECYCLE_EVENTS = new HashSet<>();
